@@ -1,17 +1,22 @@
 {
 	"compilerOptions": {
-		"target": "ESNext",
-		"module": "commonjs",
+		"target": "ES2023",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"lib": ["ES2023", "DOM"],
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
 		"strict": true,
+		"jsx": "react-jsx",
 		"esModuleInterop": true,
+		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true
+		"noImplicitAny": false,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
+		"allowSyntheticDefaultImports": true,
+		"types": ["vite/client", "navigation-api-types"]
 	},
-	"include": [
-		"src/**/*"
-	],
-	"exclude": [
-		"node_modules",
-		"dist"
-	]
+	"include": ["src"],
+	"exclude": ["node_modules", "dist"]
 }

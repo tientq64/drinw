@@ -1,0 +1,17 @@
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+@tailwind base;
+@tailwind utilities;
+
+@layer utilities {
+	.scheme-dark {
+		color-scheme: dark;
+	}
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+}
