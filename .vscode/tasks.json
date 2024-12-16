@@ -10,7 +10,7 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"close": true,
+				// "close": true,
 				"reveal": "silent"
 			}
 		}

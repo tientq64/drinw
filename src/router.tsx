@@ -2,10 +2,12 @@ import { createBrowserRouter, Navigate } from 'react-router'
 import { AccountsPage } from './pages/AccountsPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { DrivePage } from './pages/DrivePage'
+import { Layout } from './layouts/Layout'
 
 export const router = createBrowserRouter([
 	{
 		path: '/',
+		element: <Layout />,
 		children: [
 			{
 				path: 'accounts',

@@ -7,8 +7,16 @@
 @tailwind utilities;
 
 @layer utilities {
+	.h-titlebar {
+		height: env(titlebar-area-height);
+	}
+
 	.scheme-dark {
 		color-scheme: dark;
+	}
+
+	.app-region-drag {
+		-webkit-app-region: drag;
 	}
 }
 

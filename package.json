@@ -3,17 +3,13 @@
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"main": "app.js",
-	"node-remote": "http://localhost:5500",
+	"main": "app.cjs",
 	"author": {
 		"name": "tientq64",
 		"url": "https://github.com/tientq64"
 	},
-	"window": {
-		"icon": "src/assets/images/icon-256.png"
-	},
 	"scripts": {
-		"start": "concurrently \"vite\" \"wait-on http://localhost:5500 && nw .\""
+		"start": "concurrently \"vite\" \"wait-on http://localhost:5500 && electron .\""
 	},
 	"dependencies": {
 		"@emotion/react": "^11.14.0",
@@ -26,6 +22,7 @@
 		"filesize": "10.1.6",
 		"formik": "2.4.6",
 		"fs-extra": "11.2.0",
+		"gaxios": "6.7.1",
 		"googleapis": "144.0.0",
 		"immer": "10.1.1",
 		"lodash-es": "4.17.21",
@@ -33,6 +30,7 @@
 		"react": "19.0.0",
 		"react-dom": "19.0.0",
 		"react-router": "7.0.2",
+		"yt-dlp-wrap": "2.3.12",
 		"yup": "1.5.0",
 		"zustand": "5.0.2"
 	},
@@ -41,7 +39,6 @@
 		"@types/gapi": "0.0.47",
 		"@types/lodash-es": "^4.17.12",
 		"@types/node": "22.10.2",
-		"@types/nw.js": "0.92.0",
 		"@types/react": "^19.0.1",
 		"@types/react-dom": "^19.0.2",
 		"@types/react-router": "5.1.20",
@@ -49,9 +46,9 @@
 		"@vitejs/plugin-react": "4.3.4",
 		"autoprefixer": "10.4.20",
 		"concurrently": "9.1.0",
+		"electron": "33.2.1",
+		"electron-vite": "2.2.0",
 		"navigation-api-types": "0.5.1",
-		"nw": "^0.94.0",
-		"nwjs-types": "1.0.0",
 		"postcss": "8.4.49",
 		"sass": "1.83.0",
 		"tailwindcss": "3.4.16",

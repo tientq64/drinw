@@ -13,7 +13,7 @@ export function SettingsPage(): ReactNode {
 	const masterEmail = useAppStore((state) => state.masterEmail)
 
 	const handleSubmit = (values: SettingValues): void => {
-		console.log(values)
+		// console.log(values)
 	}
 
 	const formik = useFormik<SettingValues>({
@@ -34,11 +34,14 @@ export function SettingsPage(): ReactNode {
 				<form onSubmit={formik.handleSubmit}>
 					<TextField
 						{...formik.getFieldProps('masterEmail')}
-						label="Email chính"
+						label="Email tài khoản chính"
 						fullWidth
 						variant="standard"
 						error={Boolean(formik.errors.masterEmail)}
-						helperText={formik.errors.masterEmail}
+						helperText={
+							formik.errors.masterEmail ??
+							'Các tài khoản service account sẽ chia sẻ thư mục chính của họ cho tài khoản này.'
+						}
 					/>
 				</form>
 			</div>

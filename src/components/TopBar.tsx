@@ -1,7 +1,7 @@
 import { ArrowBackRounded, SettingsRounded } from '@mui/icons-material'
 import { AppBar, IconButton, Toolbar, Tooltip } from '@mui/material'
 import { ReactNode } from 'react'
-import { useLocation, useMatch, useNavigate } from 'react-router'
+import { useMatch, useNavigate } from 'react-router'
 
 interface Props {
 	title?: string
@@ -23,7 +23,7 @@ export function TopBar({ title }: Props): ReactNode {
 
 	return (
 		<AppBar position="static">
-			<Toolbar variant="dense">
+			<Toolbar className="px-2" disableGutters variant="dense">
 				<Tooltip title="Quay lại" enterDelay={500}>
 					<IconButton disabled={!canGoBack} onClick={handleBackClick}>
 						<ArrowBackRounded />
@@ -35,9 +35,14 @@ export function TopBar({ title }: Props): ReactNode {
 				</div>
 
 				<Tooltip title="Cài đặt">
-					<IconButton disabled={settingsPathMatch !== null} onClick={handleSettingsClick}>
-						<SettingsRounded />
-					</IconButton>
+					<div>
+						<IconButton
+							disabled={settingsPathMatch !== null}
+							onClick={handleSettingsClick}
+						>
+							<SettingsRounded />
+						</IconButton>
+					</div>
 				</Tooltip>
 			</Toolbar>
 		</AppBar>

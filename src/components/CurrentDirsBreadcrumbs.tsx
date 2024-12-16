@@ -1,27 +1,69 @@
-import { Breadcrumbs, Typography } from '@mui/material'
+import {
+	AccountCircleRounded,
+	FolderRounded,
+	FolderSharedRounded,
+	StorageRounded
+} from '@mui/icons-material'
+import { Breadcrumbs } from '@mui/material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
+import { useNavigate } from 'react-router'
 import { Dir, useAppStore } from '../store/useAppStore'
+import { AccountUsageProgress } from './AccountUsageProgress'
 
 export function CurrentDirsBreadcrumbs(): ReactNode {
 	const currentDirs = useAppStore((state) => state.currentDirs)
+	const currentAccount = useAppStore((state) => state.currentAccount)
+	const jumpCurrentDirs = useAppStore((state) => state.jumpCurrentDirs)
 
 	const currentDir: Dir | undefined = currentDirs.at(-1)
-	if (currentDir === undefined) return
+
+	const navigate = useNavigate()
+
+	const handleCurrentDirClick = (dir: Dir): void => {
+		jumpCurrentDirs(dir.dirId)
+	}
+
+	const handleAccountsClick = (): void => {
+		navigate('/accounts')
+	}
 
 	return (
-		<Breadcrumbs className="px-8">
-			{currentDirs.map((dir) => (
-				<Typography
-					key={dir.dirId}
+		<div className="flex justify-between items-center px-4">
+			<Breadcrumbs className="py-2">
+				<div
 					className={clsx(
-						dir !== currentDir && 'hover:underline cursor-pointer',
-						dir === currentDir && 'text-white'
+						'flex items-center gap-2',
+						currentDir !== undefined && 'hover:underline cursor-pointer',
+						currentDir === undefined && 'text-white pointer-events-none'
 					)}
+					onClick={handleAccountsClick}
 				>
-					{dir.dirName}
-				</Typography>
-			))}
-		</Breadcrumbs>
+					<StorageRounded className="!size-5" />
+					Tài khoản
+				</div>
+
+				{currentDirs.map((dir, index) => (
+					<div
+						key={dir.dirId}
+						className={clsx(
+							'flex items-center gap-2',
+							dir !== currentDir && 'hover:underline cursor-pointer',
+							dir === currentDir && 'text-white pointer-events-none'
+						)}
+						onClick={() => handleCurrentDirClick(dir)}
+					>
+						{index === 0 && <AccountCircleRounded className="!size-5" />}
+						{index === 1 && <FolderSharedRounded className="!size-5 text-amber-500" />}
+						{index > 1 && <FolderRounded className="!size-5 text-amber-500" />}
+						{dir.dirName}
+					</div>
+				))}
+			</Breadcrumbs>
+
+			{currentAccount && (
+				<AccountUsageProgress className="gap-1 w-96 pt-1" account={currentAccount} />
+			)}
+		</div>
 	)
 }

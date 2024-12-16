@@ -1,7 +1,7 @@
 import { readJsonSync } from 'fs-extra'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import { findIndex } from 'lodash-es'
+import { findIndex, isPlainObject } from 'lodash-es'
 
 export type Kind = 'youtube' | 'tiktok' | 'spankbang' | 'facebook' | 'mrcong'
 
@@ -26,24 +26,28 @@ export interface AppStoreState {
 	accounts: Account[]
 	currentAccount: Account | undefined
 	currentDirs: Dir[]
+	isInTrash: boolean
 }
 
 export interface AppStoreActions {
 	setMasterEmail(masterEmail: string): void
 	addAccount(account: Account): void
 	setCurrentAccount(currentAccount: Account | undefined): void
-	pushCurrentDir(...dirs: Dir[]): void
-	jumpCurrentDir(dirId: string): void
+	pushCurrentDirs(...dirs: Dir[]): void
+	jumpCurrentDirs(dirId: string): void
+	emptyCurrentDirs(): void
+	setIsInTrash(isInTrash: boolean): void
 }
 
 export type AppStore = AppStoreState & AppStoreActions
 
 export const useAppStore = create<AppStore>()(
-	immer((set) => ({
+	immer((set, get) => ({
 		masterEmail: '',
 		accounts: [],
-		currentDirs: [],
 		currentAccount: undefined,
+		currentDirs: [],
+		isInTrash: false,
 
 		setMasterEmail(masterEmail) {
 			set({ masterEmail })
@@ -57,17 +61,23 @@ export const useAppStore = create<AppStore>()(
 		setCurrentAccount(currentAccount) {
 			set({ currentAccount })
 		},
-		pushCurrentDir(...dirs) {
+		pushCurrentDirs(...dirs) {
 			set((state) => {
 				state.currentDirs.push(...dirs)
 			})
 		},
-		jumpCurrentDir(dirId) {
+		jumpCurrentDirs(dirId) {
 			set((state) => {
 				const index: number = findIndex(state.currentDirs, { dirId })
 				if (index === -1) return
 				state.currentDirs.splice(index + 1)
 			})
+		},
+		emptyCurrentDirs() {
+			set({ currentDirs: [] })
+		},
+		setIsInTrash(isInTrash) {
+			set({ isInTrash })
 		}
 	}))
 )
