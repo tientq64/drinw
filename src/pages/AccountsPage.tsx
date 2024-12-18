@@ -8,12 +8,10 @@ import {
 	TableRow
 } from '@mui/material'
 import { ReactNode, useEffect } from 'react'
+import { useNavigate } from 'react-router'
 import { AccountUsageProgress } from '../components/AccountUsageProgress'
-import { TopBar } from '../components/TopBar'
 import { getAccountClientEmailName } from '../helpers/getAccountClientEmailName'
 import { Account, useAppStore } from '../store/useAppStore'
-import { useNavigate } from 'react-router'
-import { CurrentDirsBreadcrumbs } from '../components/CurrentDirsBreadcrumbs'
 
 export function AccountsPage(): ReactNode {
 	const accounts = useAppStore((state) => state.accounts)
@@ -31,12 +29,6 @@ export function AccountsPage(): ReactNode {
 			dirId: 'root',
 			dirName: account.title || emailName
 		})
-		if (account.mainDirId) {
-			pushCurrentDirs({
-				dirId: account.mainDirId,
-				dirName: emailName
-			})
-		}
 		navigate('/drive')
 	}
 
@@ -48,10 +40,6 @@ export function AccountsPage(): ReactNode {
 
 	return (
 		<Box className="flex flex-col h-full">
-			<TopBar title="Đăng nhập"></TopBar>
-
-			<CurrentDirsBreadcrumbs />
-
 			<TableContainer>
 				<Table stickyHeader size="small">
 					<TableHead>
@@ -60,7 +48,7 @@ export function AccountsPage(): ReactNode {
 							<TableCell width="10%">Tài khoản</TableCell>
 							<TableCell width="25%">Tiêu đề</TableCell>
 							<TableCell width="10%">Thể loại</TableCell>
-							<TableCell width="25%">Bộ lọc</TableCell>
+							<TableCell width="25%">Quy tắc</TableCell>
 							<TableCell width="30%">Dung lượng sử dụng</TableCell>
 						</TableRow>
 					</TableHead>

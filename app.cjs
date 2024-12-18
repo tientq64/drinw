@@ -11,11 +11,11 @@
 
 	const win = new BrowserWindow({
 		icon: 'src/assets/images/icon-256.png',
-		backgroundColor: '#272727',
+		backgroundColor: '#18181b',
 		autoHideMenuBar: true,
 		titleBarStyle: 'hidden',
 		titleBarOverlay: {
-			color: '#272727',
+			color: '#18181b',
 			symbolColor: '#f9fafb'
 		},
 		webPreferences: {

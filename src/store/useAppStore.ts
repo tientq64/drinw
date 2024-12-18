@@ -1,7 +1,8 @@
 import { readJsonSync } from 'fs-extra'
+import { findIndex } from 'lodash-es'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import { findIndex, isPlainObject } from 'lodash-es'
+import { FilesViewModeEnum } from '../constants/filesViewModes'
 
 export type Kind = 'youtube' | 'tiktok' | 'spankbang' | 'facebook' | 'mrcong'
 
@@ -27,6 +28,7 @@ export interface AppStoreState {
 	currentAccount: Account | undefined
 	currentDirs: Dir[]
 	isInTrash: boolean
+	filesViewMode: FilesViewModeEnum
 }
 
 export interface AppStoreActions {
@@ -37,17 +39,19 @@ export interface AppStoreActions {
 	jumpCurrentDirs(dirId: string): void
 	emptyCurrentDirs(): void
 	setIsInTrash(isInTrash: boolean): void
+	setFilesViewMode(filesViewMode: FilesViewModeEnum): void
 }
 
 export type AppStore = AppStoreState & AppStoreActions
 
 export const useAppStore = create<AppStore>()(
-	immer((set, get) => ({
+	immer((set) => ({
 		masterEmail: '',
 		accounts: [],
 		currentAccount: undefined,
 		currentDirs: [],
 		isInTrash: false,
+		filesViewMode: FilesViewModeEnum.List,
 
 		setMasterEmail(masterEmail) {
 			set({ masterEmail })
@@ -78,6 +82,9 @@ export const useAppStore = create<AppStore>()(
 		},
 		setIsInTrash(isInTrash) {
 			set({ isInTrash })
+		},
+		setFilesViewMode(filesViewMode) {
+			set({ filesViewMode })
 		}
 	}))
 )

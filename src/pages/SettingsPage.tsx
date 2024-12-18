@@ -1,8 +1,18 @@
-import { Box, TextField } from '@mui/material'
+import {
+	Divider,
+	FormControl,
+	InputLabel,
+	ListItemIcon,
+	ListItemText,
+	MenuItem,
+	Select,
+	SelectChangeEvent,
+	TextField
+} from '@mui/material'
 import { useFormik } from 'formik'
-import { ReactNode } from 'react'
+import { ReactNode, useId } from 'react'
 import { object, string } from 'yup'
-import { TopBar } from '../components/TopBar'
+import { FilesViewModeEnum, filesViewModes } from '../constants/filesViewModes'
 import { useAppStore } from '../store/useAppStore'
 
 interface SettingValues {
@@ -11,9 +21,19 @@ interface SettingValues {
 
 export function SettingsPage(): ReactNode {
 	const masterEmail = useAppStore((state) => state.masterEmail)
+	const filesViewMode = useAppStore((state) => state.filesViewMode)
+	const setFilesViewMode = useAppStore((state) => state.setFilesViewMode)
+
+	const filesViewModeLabelId: string = useId()
 
 	const handleSubmit = (values: SettingValues): void => {
 		// console.log(values)
+	}
+
+	const handleCurrentFilesViewModeChange = (
+		event: SelectChangeEvent<FilesViewModeEnum>
+	): void => {
+		setFilesViewMode(event.target.value as FilesViewModeEnum)
 	}
 
 	const formik = useFormik<SettingValues>({
@@ -27,24 +47,38 @@ export function SettingsPage(): ReactNode {
 	})
 
 	return (
-		<Box className="flex flex-col h-full">
-			<TopBar title="Cài đặt"></TopBar>
+		<div className="h-full p-8">
+			<form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
+				<TextField
+					{...formik.getFieldProps('masterEmail')}
+					label="Email tài khoản chính"
+					size="small"
+					error={Boolean(formik.errors.masterEmail)}
+					helperText={
+						formik.errors.masterEmail ??
+						'Các tài khoản service account sẽ chia sẻ thư mục chính của họ với tài khoản này.'
+					}
+				/>
 
-			<div className="flex-1 p-8">
-				<form onSubmit={formik.handleSubmit}>
-					<TextField
-						{...formik.getFieldProps('masterEmail')}
-						label="Email tài khoản chính"
-						fullWidth
-						variant="standard"
-						error={Boolean(formik.errors.masterEmail)}
-						helperText={
-							formik.errors.masterEmail ??
-							'Các tài khoản service account sẽ chia sẻ thư mục chính của họ cho tài khoản này.'
-						}
-					/>
-				</form>
-			</div>
-		</Box>
+				<FormControl size="small">
+					<InputLabel id={filesViewModeLabelId}>Chế độ xem danh sách tập tin</InputLabel>
+					<Select
+						labelId={filesViewModeLabelId}
+						label="Chế độ xem danh sách tập tin"
+						value={filesViewMode}
+						onChange={handleCurrentFilesViewModeChange}
+					>
+						{filesViewModes.map((viewMode) => (
+							<MenuItem value={viewMode.value}>
+								<div className="flex items-center gap-4">
+									{viewMode.icon}
+									{viewMode.label}
+								</div>
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+			</form>
+		</div>
 	)
 }
