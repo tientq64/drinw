@@ -95,7 +95,13 @@ const defaultAppData: AppData = {
 	masterEmail: '',
 	accounts: []
 }
-const jsonAppData: Partial<AppData> = readJsonSync('data/appData.json')
+
+let jsonAppData: Partial<AppData>
+try {
+	jsonAppData = readJsonSync('data/appData.json')
+} catch {
+	jsonAppData = {}
+}
 const appData: AppData = {
 	...defaultAppData,
 	...jsonAppData

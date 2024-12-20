@@ -69,7 +69,7 @@ export function SettingsPage(): ReactNode {
 						onChange={handleCurrentFilesViewModeChange}
 					>
 						{filesViewModes.map((viewMode) => (
-							<MenuItem value={viewMode.value}>
+							<MenuItem key={viewMode.value} value={viewMode.value}>
 								<div className="flex items-center gap-4">
 									{viewMode.icon}
 									{viewMode.label}

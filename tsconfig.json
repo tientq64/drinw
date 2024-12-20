@@ -15,7 +15,7 @@
 		"noImplicitThis": true,
 		"strictNullChecks": true,
 		"allowSyntheticDefaultImports": true,
-		"types": ["vite/client", "navigation-api-types"]
+		"types": ["vite/client"]
 	},
 	"include": ["src"],
 	"exclude": ["node_modules", "dist"]

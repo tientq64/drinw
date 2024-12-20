@@ -1,7 +1,11 @@
 # Changelog
 
-> Chú ý: Thời gian hiển thị theo định dạng năm-tháng-ngày.
+> Lưu ý: Thời gian trong tài liệu này được viết theo định dạng năm-tháng-ngày.
 
-## 0.3.0 - 2024-18-12
+## 0.3.0 - 2024-12-18
 
 - Tối ưu, đồng nhất lại giao diện, loại bỏ một số phần không cần thiết.
+
+## 0.4.0 - 2024-12-21
+
+- Thêm context menu.

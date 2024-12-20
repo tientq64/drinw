@@ -1,24 +1,16 @@
-import {
-	Card,
-	CardActionArea,
-	CardMedia,
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableRow
-} from '@mui/material'
+import { CreateNewFolderRounded } from '@mui/icons-material'
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import { useInViewport, useRequest } from 'ahooks'
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router'
+import { ContextMenu } from '../components/ContextMenu'
+import { FileItem } from '../components/FileItem'
 import { DRIVE_DIR_MIME_TYPE } from '../constants/constants'
 import { FilesViewModeEnum } from '../constants/filesViewModes'
 import { getAccountClientEmailName } from '../helpers/getAccountClientEmailName'
 import { getFiles } from '../helpers/getFiles'
 import { DriveFile } from '../helpers/getGoogleDrive'
 import { Dir, useAppStore } from '../store/useAppStore'
-import { formatSize } from '../utils/formatSize'
-import { formatVideoDuration } from '../utils/formatVideoDuration'
 
 export function DrivePage(): ReactNode {
 	const currentAccount = useAppStore((state) => state.currentAccount)
@@ -46,14 +38,6 @@ export function DrivePage(): ReactNode {
 	const [isLoadMoreInViewport] = useInViewport(loadMoreRef)
 
 	const canLoadMore: boolean = nextPageToken !== undefined && !filesGetter.loading
-
-	const dirsOnly = useMemo<DriveFile[]>(() => {
-		return files.filter((file) => file.mimeType === DRIVE_DIR_MIME_TYPE)
-	}, [files])
-
-	const filesOnly = useMemo<DriveFile[]>(() => {
-		return files.filter((file) => file.mimeType !== DRIVE_DIR_MIME_TYPE)
-	}, [files])
 
 	const getFilesIterator = async function* () {
 		let pageToken: string | undefined = undefined
@@ -120,136 +104,74 @@ export function DrivePage(): ReactNode {
 	}, [isInTrash])
 
 	return (
-		<div key={currentDir.dirId} className="flex-1 h-full overflow-auto">
-			{filesViewMode === FilesViewModeEnum.List && (
-				<Table stickyHeader size="small">
-					<TableHead>
-						<TableRow>
-							<TableCell>STT</TableCell>
-							<TableCell width="50%">Tên</TableCell>
-							<TableCell width="12%">Dung lượng</TableCell>
-							<TableCell width="16%">Loại</TableCell>
-							<TableCell width="8%">Thời lượng</TableCell>
-							<TableCell width="14%">Kích cỡ</TableCell>
-						</TableRow>
-					</TableHead>
+		<ContextMenu
+			menuItems={[
+				{
+					title: 'Thư mục mới',
+					icon: <CreateNewFolderRounded />
+				}
+			]}
+		>
+			<div key={currentDir.dirId} className="flex-1 h-full overflow-auto">
+				{filesViewMode === FilesViewModeEnum.List && (
+					<Table stickyHeader size="small">
+						<TableHead>
+							<TableRow>
+								<TableCell>STT</TableCell>
+								<TableCell width="50%">Tên</TableCell>
+								<TableCell width="12%">Dung lượng</TableCell>
+								<TableCell width="16%">Loại</TableCell>
+								<TableCell width="8%">Thời lượng</TableCell>
+								<TableCell width="14%">Kích cỡ</TableCell>
+							</TableRow>
+						</TableHead>
 
-					<TableBody className="select-none cursor-default">
-						<TableRow hover>
-							<TableCell colSpan={6} onDoubleClick={handleGoParentDoubleClick}>
-								...
-							</TableCell>
-						</TableRow>
-
-						{files.map((file, index) => (
-							<TableRow
-								key={file.id}
-								hover
-								onDoubleClick={() => handleFileDoubleClick(file)}
-							>
-								<TableCell className="!text-zinc-400">{index + 1}</TableCell>
-
-								<TableCell>
-									<div className="pr-16 line-clamp-1">
-										{file.description || file.name}
-									</div>
-								</TableCell>
-
-								<TableCell className="!text-zinc-400">
-									{formatSize(file.size)}
-								</TableCell>
-
-								<TableCell className="!text-zinc-400">
-									{file.mimeType !== DRIVE_DIR_MIME_TYPE && file.mimeType}
-								</TableCell>
-
-								<TableCell className="!text-zinc-400">
-									{file.videoMediaMetadata != null && (
-										<>
-											{formatVideoDuration(
-												file.videoMediaMetadata.durationMillis
-											)}
-										</>
-									)}
-								</TableCell>
-
-								<TableCell className="!text-zinc-400">
-									{file.imageMediaMetadata && (
-										<>
-											{file.imageMediaMetadata.width}
-											{' x '}
-											{file.imageMediaMetadata.height}
-										</>
-									)}
-									{file.videoMediaMetadata && (
-										<>
-											{file.videoMediaMetadata.width}
-											{' x '}
-											{file.videoMediaMetadata.height}
-										</>
-									)}
+						<TableBody className="select-none cursor-default">
+							<TableRow hover>
+								<TableCell colSpan={6} onDoubleClick={handleGoParentDoubleClick}>
+									...
 								</TableCell>
 							</TableRow>
+
+							{files.map((file, index) => (
+								<FileItem
+									key={file.id}
+									file={file}
+									index={index}
+									viewMode={filesViewMode}
+									account={currentAccount}
+									onFileDoubleClick={handleFileDoubleClick}
+								/>
+							))}
+						</TableBody>
+					</Table>
+				)}
+
+				{filesViewMode === FilesViewModeEnum.Grid && (
+					<div className="grid grid-cols-8 gap-3 p-4">
+						{files.map((file, index) => (
+							<FileItem
+								key={file.id}
+								file={file}
+								index={index}
+								viewMode={filesViewMode}
+								account={currentAccount}
+								onFileDoubleClick={handleFileDoubleClick}
+							/>
 						))}
-					</TableBody>
-				</Table>
-			)}
+					</div>
+				)}
 
-			{filesViewMode === FilesViewModeEnum.Grid && (
-				<div className="flex flex-col gap-3 p-4">
-					{dirsOnly.length > 0 && (
-						<div className="grid grid-cols-8 gap-3">
-							{dirsOnly.map((file) => (
-								<CardActionArea disableRipple key={file.id}>
-									<Card
-										className="cursor-default"
-										onDoubleClick={() => handleFileDoubleClick(file)}
-									>
-										<div className="px-3 py-2 truncate text-sm">
-											{file.description || file.name}
-										</div>
-									</Card>
-								</CardActionArea>
-							))}
-						</div>
-					)}
+				{(filesGetter.loading || nextPageToken !== undefined) && (
+					<div ref={loadMoreRef} className="py-2 text-center text-zinc-400">
+						Đang tải...
+					</div>
+				)}
 
-					{filesOnly.length > 0 && (
-						<div className="grid grid-cols-8 gap-3">
-							{filesOnly.map((file) => (
-								<CardActionArea disableRipple key={file.id}>
-									<Card
-										className="cursor-default"
-										onDoubleClick={() => handleFileDoubleClick(file)}
-									>
-										<CardMedia
-											className="aspect-[16/9]"
-											image={
-												file.thumbnailLink == null
-													? undefined
-													: file.thumbnailLink.replace('=s220', '=s200')
-											}
-										/>
-										<div className="px-2 py-1 truncate text-sm">
-											{file.description || file.name}
-										</div>
-									</Card>
-								</CardActionArea>
-							))}
-						</div>
-					)}
-				</div>
-			)}
-
-			{(filesGetter.loading || nextPageToken !== undefined) && (
-				<div ref={loadMoreRef} className="py-2 text-center text-zinc-400">
-					Đang tải...
-				</div>
-			)}
-
-			{files.length === 0 && !filesGetter.loading && (
-				<div className="py-2 text-center text-zinc-500">Thư mục trống</div>
-			)}
-		</div>
+				{files.length === 0 && !filesGetter.loading && (
+					<div className="py-2 text-center text-zinc-500">Thư mục trống</div>
+				)}
+			</div>
+		</ContextMenu>
 	)
 }

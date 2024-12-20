@@ -1,5 +1,5 @@
 import { GridViewRounded, ViewListRounded } from '@mui/icons-material'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 
 export enum FilesViewModeEnum {
 	List = 'list',

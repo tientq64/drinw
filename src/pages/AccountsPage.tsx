@@ -1,3 +1,4 @@
+import { DeleteRounded, EditRounded, FolderRounded } from '@mui/icons-material'
 import {
 	Box,
 	Table,
@@ -7,9 +8,11 @@ import {
 	TableHead,
 	TableRow
 } from '@mui/material'
+import clsx from 'clsx'
 import { ReactNode, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { AccountUsageProgress } from '../components/AccountUsageProgress'
+import { ContextMenu } from '../components/ContextMenu'
 import { getAccountClientEmailName } from '../helpers/getAccountClientEmailName'
 import { Account, useAppStore } from '../store/useAppStore'
 
@@ -55,33 +58,64 @@ export function AccountsPage(): ReactNode {
 
 					<TableBody className="select-none cursor-default">
 						{accounts.map((account, index) => (
-							<TableRow
+							<ContextMenu
 								key={account.clientEmail}
-								hover
-								onDoubleClick={() => handleAccountClick(account)}
+								menuItems={[
+									{
+										title: 'Mở',
+										icon: <FolderRounded />,
+										click: () => handleAccountClick(account)
+									},
+									{
+										divider: true
+									},
+									{
+										title: 'Chỉnh sửa',
+										icon: <EditRounded />
+									},
+									{
+										title: 'Xóa',
+										icon: <DeleteRounded />
+									}
+								]}
 							>
-								<TableCell className="!text-zinc-400">{index + 1}</TableCell>
-								<TableCell>{getAccountClientEmailName(account)}</TableCell>
-								<TableCell>{account.title}</TableCell>
-								<TableCell>{account.kind}</TableCell>
-								<TableCell className="!text-zinc-500">
-									{account.tiktokUsernameFirstLetter !== undefined && (
-										<>
-											Khớp với ký tự đầu của username:{' '}
-											{account.tiktokUsernameFirstLetter}
-										</>
-									)}
-								</TableCell>
-								<TableCell className="!pb-0">
-									{account.mainDirId !== undefined && (
-										<AccountUsageProgress account={account} />
-									)}
-								</TableCell>
-							</TableRow>
+								{(isOpen) => (
+									<TableRow
+										className={clsx(isOpen && 'bg-zinc-800')}
+										hover
+										tabIndex={0}
+										onDoubleClick={() => handleAccountClick(account)}
+									>
+										<TableCell className="!text-zinc-400">
+											{index + 1}
+										</TableCell>
+										<TableCell>{getAccountClientEmailName(account)}</TableCell>
+										<TableCell>{account.title}</TableCell>
+										<TableCell>{account.kind}</TableCell>
+										<TableCell className="!text-zinc-500">
+											{account.tiktokUsernameFirstLetter !== undefined && (
+												<>
+													Khớp với ký tự đầu của username:{' '}
+													{account.tiktokUsernameFirstLetter}
+												</>
+											)}
+										</TableCell>
+										<TableCell className="!pb-0">
+											{account.mainDirId !== undefined && (
+												<AccountUsageProgress account={account} />
+											)}
+										</TableCell>
+									</TableRow>
+								)}
+							</ContextMenu>
 						))}
 					</TableBody>
 				</Table>
 			</TableContainer>
+
+			{accounts.length === 0 && (
+				<div className="py-2 text-center text-zinc-500">Chưa có tài khoản nào</div>
+			)}
 		</Box>
 	)
 }

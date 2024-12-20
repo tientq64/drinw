@@ -23,3 +23,10 @@
 body {
 	font-family: 'Roboto', sans-serif;
 }
+
+.ContextMenu {
+	.MuiDivider-root:first-child,
+	.MuiDivider-root + .MuiDivider-root {
+		display: none;
+	}
+}

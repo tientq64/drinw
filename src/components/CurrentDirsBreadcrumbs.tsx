@@ -84,7 +84,7 @@ export function CurrentDirsBreadcrumbs(): ReactNode {
 				onChange={handleFilesViewModeButtonChange}
 			>
 				{filesViewModes.map((viewMode) => (
-					<Tooltip title={viewMode.label}>
+					<Tooltip key={viewMode.value} title={viewMode.label}>
 						<ToggleButton className="!py-0" value={viewMode.value}>
 							{viewMode.icon}
 						</ToggleButton>

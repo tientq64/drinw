@@ -9,7 +9,7 @@ export function vitePluginImportToRequire(): Plugin {
 		transform(code, id) {
 			if (id.includes('/node_modules/')) return null
 			if (!id.includes('.ts')) return null
-			code = code.replace(importToRequireRegex, (_s, s1, s2) => {
+			code = code.replace(importToRequireRegex, (_, s1, s2) => {
 				return `const ${s1} = require(${s2})`
 			})
 			return { code }
