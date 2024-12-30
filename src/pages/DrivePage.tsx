@@ -1,16 +1,30 @@
-import { CreateNewFolderRounded } from '@mui/icons-material'
+import {
+	CloudUploadRounded,
+	CreateNewFolderRounded,
+	DeleteForeverRounded,
+	DeleteRounded,
+	InfoRounded,
+	RefreshRounded,
+	StorageRounded,
+	UploadFileRounded
+} from '@mui/icons-material'
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import { useInViewport, useRequest } from 'ahooks'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router'
-import { ContextMenu } from '../components/ContextMenu'
+import { ContextMenu, ContextMenuItem } from '../components/ContextMenu'
 import { FileItem } from '../components/FileItem'
 import { DRIVE_DIR_MIME_TYPE } from '../constants/constants'
 import { FilesViewModeEnum } from '../constants/filesViewModes'
 import { getAccountClientEmailName } from '../helpers/getAccountClientEmailName'
 import { getFiles } from '../helpers/getFiles'
 import { DriveFile } from '../helpers/getGoogleDrive'
-import { Dir, useAppStore } from '../store/useAppStore'
+import { useUploadViaUrlDialog } from '../hooks/useUploadViaUrlDialog'
+import { jumpCurrentDirs } from '../store/jumpCurrentDirs'
+import { pushCurrentDirs } from '../store/pushCurrentDirs'
+import { setIsInTrash } from '../store/setIsInTrash'
+import { Dir } from '../store/types'
+import { useAppStore } from '../store/useAppStore'
 
 export function DrivePage(): ReactNode {
 	const currentAccount = useAppStore((state) => state.currentAccount)
@@ -24,8 +38,6 @@ export function DrivePage(): ReactNode {
 	const currentDir: Dir | undefined = currentDirs.at(-1)
 	if (currentDir === undefined) return
 
-	const pushCurrentDirs = useAppStore((state) => state.pushCurrentDirs)
-	const jumpCurrentDirs = useAppStore((state) => state.jumpCurrentDirs)
 	const isInTrash = useAppStore((state) => state.isInTrash)
 	const filesViewMode = useAppStore((state) => state.filesViewMode)
 
@@ -36,8 +48,14 @@ export function DrivePage(): ReactNode {
 	const [nextPageToken, setNextPageToken] = useState<string | undefined>(undefined)
 	const loadMoreRef = useRef<HTMLDivElement | null>(null)
 	const [isLoadMoreInViewport] = useInViewport(loadMoreRef)
+	const uploadViaUrlDialog = useUploadViaUrlDialog()
 
 	const canLoadMore: boolean = nextPageToken !== undefined && !filesGetter.loading
+
+	const loadFiles = () => {
+		getFilesIter.current = getFilesIterator()
+		getFilesIter.current.next()
+	}
 
 	const getFilesIterator = async function* () {
 		let pageToken: string | undefined = undefined
@@ -47,7 +65,7 @@ export function DrivePage(): ReactNode {
 			const result = await filesGetter.runAsync(currentAccount, {
 				dirId: currentDir.dirId,
 				trashed: isInTrash,
-				fields: 'files(id,name,mimeType,size,description,thumbnailLink,imageMediaMetadata(width,height),videoMediaMetadata(width,height,durationMillis)),nextPageToken',
+				fields: 'files(id,name,mimeType,size,description,thumbnailLink,webViewLink,imageMediaMetadata(width,height),videoMediaMetadata(width,height,durationMillis)),nextPageToken',
 				pageToken
 			})
 			pageToken = result.data.nextPageToken ?? undefined
@@ -79,9 +97,72 @@ export function DrivePage(): ReactNode {
 		}
 	}
 
+	const driveContextMenuItems: ContextMenuItem[] = [
+		{
+			title: 'Làm mới',
+			icon: <RefreshRounded />,
+			click: loadFiles
+		},
+		{
+			divider: true
+		},
+		{
+			title: 'Tải lên tập tin',
+			icon: <UploadFileRounded />
+		},
+		{
+			title: 'Tải lên thông qua URL',
+			icon: <CloudUploadRounded />,
+			click: () => {
+				uploadViaUrlDialog.open(currentAccount, currentDir.dirId)
+			}
+		},
+		{
+			divider: true
+		},
+		{
+			title: 'Thư mục mới',
+			icon: <CreateNewFolderRounded />
+		},
+		{
+			divider: true
+		},
+		{
+			title: 'Đi đến thùng rác',
+			icon: <DeleteRounded />,
+			click: () => setIsInTrash(true)
+		},
+		{
+			divider: true
+		},
+		{
+			title: 'Thông tin thư mục này',
+			icon: <InfoRounded />
+		}
+	]
+
+	const trashContextMenuItems: ContextMenuItem[] = [
+		{
+			title: 'Đi đến ổ đĩa chính',
+			icon: <StorageRounded />,
+			click: () => setIsInTrash(false)
+		},
+		{
+			title: 'Xóa tất cả trong thùng rác',
+			icon: <DeleteForeverRounded />,
+			color: 'red'
+		},
+		{
+			divider: true
+		},
+		{
+			title: 'Thông tin thùng rác',
+			icon: <InfoRounded />
+		}
+	]
+
 	useEffect(() => {
-		getFilesIter.current = getFilesIterator()
-		getFilesIter.current.next()
+		loadFiles()
 	}, [currentDir.dirId, isInTrash])
 
 	useEffect(() => {
@@ -104,35 +185,48 @@ export function DrivePage(): ReactNode {
 	}, [isInTrash])
 
 	return (
-		<ContextMenu
-			menuItems={[
-				{
-					title: 'Thư mục mới',
-					icon: <CreateNewFolderRounded />
-				}
-			]}
-		>
-			<div key={currentDir.dirId} className="flex-1 h-full overflow-auto">
-				{filesViewMode === FilesViewModeEnum.List && (
-					<Table stickyHeader size="small">
-						<TableHead>
-							<TableRow>
-								<TableCell>STT</TableCell>
-								<TableCell width="50%">Tên</TableCell>
-								<TableCell width="12%">Dung lượng</TableCell>
-								<TableCell width="16%">Loại</TableCell>
-								<TableCell width="8%">Thời lượng</TableCell>
-								<TableCell width="14%">Kích cỡ</TableCell>
-							</TableRow>
-						</TableHead>
+		<>
+			<ContextMenu menuItems={isInTrash ? trashContextMenuItems : driveContextMenuItems}>
+				<div key={currentDir.dirId} className="flex-1 h-full overflow-auto">
+					{filesViewMode === FilesViewModeEnum.List && (
+						<Table stickyHeader size="small">
+							<TableHead>
+								<TableRow>
+									<TableCell>STT</TableCell>
+									<TableCell width="50%">Tên</TableCell>
+									<TableCell width="12%">Dung lượng</TableCell>
+									<TableCell width="16%">Loại</TableCell>
+									<TableCell width="8%">Thời lượng</TableCell>
+									<TableCell width="14%">Kích cỡ</TableCell>
+								</TableRow>
+							</TableHead>
 
-						<TableBody className="select-none cursor-default">
-							<TableRow hover>
-								<TableCell colSpan={6} onDoubleClick={handleGoParentDoubleClick}>
-									...
-								</TableCell>
-							</TableRow>
+							<TableBody className="select-none cursor-default">
+								<TableRow hover>
+									<TableCell
+										colSpan={6}
+										onDoubleClick={handleGoParentDoubleClick}
+									>
+										...
+									</TableCell>
+								</TableRow>
 
+								{files.map((file, index) => (
+									<FileItem
+										key={file.id}
+										file={file}
+										index={index}
+										viewMode={filesViewMode}
+										account={currentAccount}
+										onFileDoubleClick={handleFileDoubleClick}
+									/>
+								))}
+							</TableBody>
+						</Table>
+					)}
+
+					{filesViewMode === FilesViewModeEnum.Grid && (
+						<div className="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] gap-3 p-4">
 							{files.map((file, index) => (
 								<FileItem
 									key={file.id}
@@ -143,35 +237,22 @@ export function DrivePage(): ReactNode {
 									onFileDoubleClick={handleFileDoubleClick}
 								/>
 							))}
-						</TableBody>
-					</Table>
-				)}
+						</div>
+					)}
 
-				{filesViewMode === FilesViewModeEnum.Grid && (
-					<div className="grid grid-cols-8 gap-3 p-4">
-						{files.map((file, index) => (
-							<FileItem
-								key={file.id}
-								file={file}
-								index={index}
-								viewMode={filesViewMode}
-								account={currentAccount}
-								onFileDoubleClick={handleFileDoubleClick}
-							/>
-						))}
-					</div>
-				)}
+					{(filesGetter.loading || nextPageToken !== undefined) && (
+						<div ref={loadMoreRef} className="py-2 text-center text-zinc-400">
+							Đang tải...
+						</div>
+					)}
 
-				{(filesGetter.loading || nextPageToken !== undefined) && (
-					<div ref={loadMoreRef} className="py-2 text-center text-zinc-400">
-						Đang tải...
-					</div>
-				)}
+					{files.length === 0 && !filesGetter.loading && (
+						<div className="py-2 text-center text-zinc-500">Thư mục trống</div>
+					)}
+				</div>
+			</ContextMenu>
 
-				{files.length === 0 && !filesGetter.loading && (
-					<div className="py-2 text-center text-zinc-500">Thư mục trống</div>
-				)}
-			</div>
-		</ContextMenu>
+			{uploadViaUrlDialog.dialog}
+		</>
 	)
 }

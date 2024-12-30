@@ -14,14 +14,15 @@ import { useNavigate } from 'react-router'
 import { AccountUsageProgress } from '../components/AccountUsageProgress'
 import { ContextMenu } from '../components/ContextMenu'
 import { getAccountClientEmailName } from '../helpers/getAccountClientEmailName'
-import { Account, useAppStore } from '../store/useAppStore'
+import { emptyCurrentDirs } from '../store/emptyCurrentDirs'
+import { pushCurrentDirs } from '../store/pushCurrentDirs'
+import { setCurrentAccount } from '../store/setCurrentAccount'
+import { setIsInTrash } from '../store/setIsInTrash'
+import { Account } from '../store/types'
+import { useAppStore } from '../store/useAppStore'
 
 export function AccountsPage(): ReactNode {
 	const accounts = useAppStore((state) => state.accounts)
-	const setCurrentAccount = useAppStore((state) => state.setCurrentAccount)
-	const pushCurrentDirs = useAppStore((state) => state.pushCurrentDirs)
-	const emptyCurrentDirs = useAppStore((state) => state.emptyCurrentDirs)
-	const setIsInTrash = useAppStore((state) => state.setIsInTrash)
 
 	const navigate = useNavigate()
 
@@ -91,7 +92,7 @@ export function AccountsPage(): ReactNode {
 										</TableCell>
 										<TableCell>{getAccountClientEmailName(account)}</TableCell>
 										<TableCell>{account.title}</TableCell>
-										<TableCell>{account.kind}</TableCell>
+										<TableCell>{account.kindName}</TableCell>
 										<TableCell className="!text-zinc-500">
 											{account.tiktokUsernameFirstLetter !== undefined && (
 												<>

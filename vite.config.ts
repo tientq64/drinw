@@ -4,7 +4,9 @@ import { vitePluginImportToRequire } from './plugins/vitePluginImportToRequire'
 
 export default defineConfig({
 	server: {
-		port: 5500
+		port: 5500,
+		strictPort: true
 	},
+	logLevel: 'error',
 	plugins: [react(), vitePluginImportToRequire()]
 })

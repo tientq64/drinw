@@ -1,9 +1,7 @@
 import {
-	Divider,
+	Button,
 	FormControl,
 	InputLabel,
-	ListItemIcon,
-	ListItemText,
 	MenuItem,
 	Select,
 	SelectChangeEvent,
@@ -13,6 +11,7 @@ import { useFormik } from 'formik'
 import { ReactNode, useId } from 'react'
 import { object, string } from 'yup'
 import { FilesViewModeEnum, filesViewModes } from '../constants/filesViewModes'
+import { setFilesViewMode } from '../store/setFilesViewMode'
 import { useAppStore } from '../store/useAppStore'
 
 interface SettingValues {
@@ -22,12 +21,11 @@ interface SettingValues {
 export function SettingsPage(): ReactNode {
 	const masterEmail = useAppStore((state) => state.masterEmail)
 	const filesViewMode = useAppStore((state) => state.filesViewMode)
-	const setFilesViewMode = useAppStore((state) => state.setFilesViewMode)
 
 	const filesViewModeLabelId: string = useId()
 
 	const handleSubmit = (values: SettingValues): void => {
-		// console.log(values)
+		console.log(values)
 	}
 
 	const handleCurrentFilesViewModeChange = (
@@ -36,7 +34,7 @@ export function SettingsPage(): ReactNode {
 		setFilesViewMode(event.target.value as FilesViewModeEnum)
 	}
 
-	const formik = useFormik<SettingValues>({
+	const form = useFormik<SettingValues>({
 		initialValues: {
 			masterEmail
 		},
@@ -48,14 +46,14 @@ export function SettingsPage(): ReactNode {
 
 	return (
 		<div className="h-full p-8">
-			<form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
+			<form className="flex flex-col gap-4" onSubmit={form.handleSubmit}>
 				<TextField
-					{...formik.getFieldProps('masterEmail')}
+					{...form.getFieldProps('masterEmail')}
 					label="Email tài khoản chính"
 					size="small"
-					error={Boolean(formik.errors.masterEmail)}
+					error={Boolean(form.errors.masterEmail)}
 					helperText={
-						formik.errors.masterEmail ??
+						form.errors.masterEmail ??
 						'Các tài khoản service account sẽ chia sẻ thư mục chính của họ với tài khoản này.'
 					}
 				/>
@@ -78,6 +76,8 @@ export function SettingsPage(): ReactNode {
 						))}
 					</Select>
 				</FormControl>
+
+				<Button type="submit">Lưu</Button>
 			</form>
 		</div>
 	)

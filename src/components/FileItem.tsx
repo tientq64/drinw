@@ -1,10 +1,10 @@
 import {
 	DeleteRounded,
-	EditNoteRounded,
+	DriveFileRenameOutlineRounded,
 	FolderRounded,
-	FolderSharedRounded,
 	InfoRounded,
-	OpenInBrowserRounded
+	OpenInBrowserRounded,
+	PersonAddAltRounded
 } from '@mui/icons-material'
 import { Card, CardActionArea, CardMedia, TableCell, TableRow } from '@mui/material'
 import clsx from 'clsx'
@@ -12,7 +12,8 @@ import { ReactNode, useMemo, useState } from 'react'
 import { DRIVE_DIR_MIME_TYPE } from '../constants/constants'
 import { FilesViewModeEnum } from '../constants/filesViewModes'
 import { DriveFile } from '../helpers/getGoogleDrive'
-import { Account } from '../store/useAppStore'
+import { openInBrowser } from '../helpers/openInBrowser'
+import { Account } from '../store/types'
 import { formatSize } from '../utils/formatSize'
 import { formatVideoDuration } from '../utils/formatVideoDuration'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
@@ -40,35 +41,43 @@ export function FileItem({
 		onFileDoubleClick(file)
 	}
 
+	const handleOpenFileInBrowser = (): void => {
+		if (file.webViewLink == null) return
+		openInBrowser(file.webViewLink)
+	}
+
 	const contextMenu = useMemo<ContextMenuItem[]>(
 		() => [
-			{
+			file.mimeType === DRIVE_DIR_MIME_TYPE && {
 				title: 'Mở',
 				icon: <FolderRounded />,
 				click: handleDoubleClick
 			},
 			{
 				title: 'Mở trong trình duyệt',
-				icon: <OpenInBrowserRounded />
+				icon: <OpenInBrowserRounded />,
+				disabled: file.webViewLink == null,
+				click: handleOpenFileInBrowser
 			},
 			{
 				divider: true
 			},
 			isMainDir && {
 				title: 'Chia sẻ với tài khoản chính',
-				icon: <FolderSharedRounded />
+				icon: <PersonAddAltRounded />
 			},
 			{
 				divider: true
 			},
 			{
 				title: 'Đổi tên',
-				icon: <EditNoteRounded />,
+				icon: <DriveFileRenameOutlineRounded />,
 				disabled: isMainDir
 			},
 			{
 				title: 'Xóa',
 				icon: <DeleteRounded />,
+				color: 'red',
 				disabled: isMainDir
 			},
 			{
@@ -133,11 +142,11 @@ export function FileItem({
 
 			{viewMode === FilesViewModeEnum.Grid && (
 				<ContextMenu menuItems={contextMenu} onIsOpenChange={setIsContextMenuOpen}>
-					<CardActionArea disableRipple>
-						<Card
-							className={clsx('cursor-default', isContextMenuOpen && '!bg-zinc-800')}
-							onDoubleClick={handleDoubleClick}
-						>
+					<Card
+						className={clsx(isContextMenuOpen && '!bg-zinc-800')}
+						onDoubleClick={handleDoubleClick}
+					>
+						<CardActionArea disableRipple>
 							<CardMedia
 								className="aspect-[16/9]"
 								image={
@@ -149,8 +158,8 @@ export function FileItem({
 							<div className="px-2 py-1 truncate text-sm">
 								{file.description || file.name}
 							</div>
-						</Card>
-					</CardActionArea>
+						</CardActionArea>
+					</Card>
 				</ContextMenu>
 			)}
 		</>

@@ -1,26 +1,64 @@
 import { Divider, ListItemIcon, Menu, MenuItem, Portal } from '@mui/material'
 import { useUpdateEffect } from 'ahooks'
-import { cloneElement, JSX, MouseEvent, ReactElement, ReactNode, useEffect, useState } from 'react'
+import clsx from 'clsx'
+import {
+	cloneElement,
+	Fragment,
+	JSX,
+	MouseEvent,
+	ReactElement,
+	ReactNode,
+	useEffect,
+	useState
+} from 'react'
 
 interface ContextMenuPosition {
 	top: number
 	left: number
 }
 
+type ContextMenuColor = 'blue' | 'red'
+
+interface ContextMenuColorClassNames {
+	text: string
+	icon: string
+}
+
+const colorToClassNamesMap: Record<ContextMenuColor, ContextMenuColorClassNames> = {
+	blue: {
+		text: '!text-blue-300',
+		icon: '!text-blue-400'
+	},
+	red: {
+		text: '!text-rose-300',
+		icon: '!text-rose-400'
+	}
+}
+
+function getColorClassNames(contextMenuColor?: ContextMenuColor): ContextMenuColorClassNames {
+	return contextMenuColor === undefined
+		? {
+				text: '!text-zinc-300',
+				icon: '!text-white'
+		  }
+		: colorToClassNamesMap[contextMenuColor]
+}
+
 export type ContextMenuItem =
 	| {
 			title?: string
 			icon?: ReactElement
+			color?: ContextMenuColor
 			disabled?: boolean
 			divider?: boolean
-			click?: () => void
+			click?(): void
 	  }
 	| boolean
 
 interface ContextMenuProps {
 	menuItems?: ContextMenuItem[] | JSX.Element
 	currentTarget?: boolean
-	onIsOpenChange?: (isOpen: boolean) => void
+	onIsOpenChange?(isOpen: boolean): void
 	children: ReactNode | ((isOpen: boolean) => ReactNode)
 }
 
@@ -42,22 +80,26 @@ export function ContextMenu({
 		menuItems = (
 			<div>
 				{menuItems.map((menuItem, index) => (
-					<>
+					<Fragment key={index}>
 						{typeof menuItem === 'object' && !('divider' in menuItem) && (
 							<MenuItem
-								key={index}
+								className={clsx(
+									getColorClassNames(menuItem.color).text,
+									'!cursor-default'
+								)}
 								disabled={menuItem.disabled}
 								onClick={menuItem.click}
 							>
-								<ListItemIcon>{menuItem.icon}</ListItemIcon>
+								<ListItemIcon className={getColorClassNames(menuItem.color).icon}>
+									{menuItem.icon}
+								</ListItemIcon>
+
 								{menuItem.title}
 							</MenuItem>
 						)}
 
-						{typeof menuItem === 'object' && 'divider' in menuItem && (
-							<Divider key={index} />
-						)}
-					</>
+						{typeof menuItem === 'object' && 'divider' in menuItem && <Divider />}
+					</Fragment>
 				))}
 			</div>
 		)

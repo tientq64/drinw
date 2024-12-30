@@ -1,5 +1,5 @@
 import { google } from 'googleapis'
-import { Account } from '../store/useAppStore'
+import { Account } from '../store/types'
 
 export function getGoogleAuth(account: Account) {
 	const auth = new google.auth.GoogleAuth({

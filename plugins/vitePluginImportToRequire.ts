@@ -1,7 +1,7 @@
 import { Plugin } from 'vite'
 
 const importToRequireRegex: RegExp =
-	/(?<=^|\n)import(\s*\{[\w$,\s]+\}\s*|\s+[\w$]+\s+)from\s*((['"])(?:fs-extra|googleapis)\3)/g
+	/(?<=^|\n)import(\s*\{[\w$,\s]+\}\s*|\s+[\w$]+\s+)from\s*((['"])(?:fs-extra|googleapis|youtube-dl-exec|child_process|os|https)\3)/g
 
 export function vitePluginImportToRequire(): Plugin {
 	return {

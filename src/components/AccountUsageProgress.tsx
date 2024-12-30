@@ -4,7 +4,7 @@ import { ReactNode, useMemo } from 'react'
 import { TOTAL_SIZE } from '../constants/constants'
 import { getAccountSizeRatio } from '../helpers/getAccountSizeRatio'
 import { getAccountUsedSize } from '../helpers/getAccountUsedSize'
-import { Account } from '../store/useAppStore'
+import { Account } from '../store/types'
 import { formatSize } from '../utils/formatSize'
 
 interface Props extends LinearProgressProps {

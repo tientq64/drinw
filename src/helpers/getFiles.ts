@@ -1,4 +1,4 @@
-import { Account } from '../store/useAppStore'
+import { Account } from '../store/types'
 import { Drive, getGoogleDrive } from './getGoogleDrive'
 import { makeDriveQuery } from './makeDriveQuery'
 

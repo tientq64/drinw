@@ -1,13 +1,18 @@
-import { DeleteRounded, HomeRounded, SettingsRounded, StorageRounded } from '@mui/icons-material'
+import {
+	AccountBoxRounded,
+	DeleteRounded,
+	SettingsRounded,
+	StorageRounded
+} from '@mui/icons-material'
 import { Divider, List, ListItemButton, ListItemIcon, ListSubheader } from '@mui/material'
 import { ReactNode } from 'react'
 import { useMatch, useNavigate } from 'react-router'
+import { setIsInTrash } from '../store/setIsInTrash'
 import { useAppStore } from '../store/useAppStore'
 
 export function LeftSideBar(): ReactNode {
 	const currentAccount = useAppStore((state) => state.currentAccount)
 	const isInTrash = useAppStore((state) => state.isInTrash)
-	const setIsInTrash = useAppStore((state) => state.setIsInTrash)
 
 	const navigate = useNavigate()
 	const accountsPathMatch = useMatch('/accounts')
@@ -34,7 +39,7 @@ export function LeftSideBar(): ReactNode {
 					onClick={() => navigate('/accounts')}
 				>
 					<ListItemIcon>
-						<StorageRounded />
+						<AccountBoxRounded />
 					</ListItemIcon>
 					Tài khoản
 				</ListItemButton>
@@ -45,7 +50,7 @@ export function LeftSideBar(): ReactNode {
 					onClick={handleDriveClick}
 				>
 					<ListItemIcon>
-						<HomeRounded />
+						<StorageRounded />
 					</ListItemIcon>
 					Ổ đĩa chính
 				</ListItemButton>

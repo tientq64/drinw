@@ -1,25 +1,26 @@
 import {
+	AccountBoxRounded,
 	DeleteRounded,
 	FolderRounded,
 	FolderSharedRounded,
-	HomeRounded,
 	StorageRounded
 } from '@mui/icons-material'
-import { Breadcrumbs, ButtonGroup, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
+import { Breadcrumbs, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
-import { Dir, useAppStore } from '../store/useAppStore'
-import { AccountUsageProgress } from './AccountUsageProgress'
 import { filesViewModes } from '../constants/filesViewModes'
+import { jumpCurrentDirs } from '../store/jumpCurrentDirs'
+import { setFilesViewMode } from '../store/setFilesViewMode'
+import { Dir } from '../store/types'
+import { useAppStore } from '../store/useAppStore'
+import { AccountUsageProgress } from './AccountUsageProgress'
 
 export function CurrentDirsBreadcrumbs(): ReactNode {
 	const currentDirs = useAppStore((state) => state.currentDirs)
 	const currentAccount = useAppStore((state) => state.currentAccount)
-	const jumpCurrentDirs = useAppStore((state) => state.jumpCurrentDirs)
 	const isInTrash = useAppStore((state) => state.isInTrash)
 	const filesViewMode = useAppStore((state) => state.filesViewMode)
-	const setFilesViewMode = useAppStore((state) => state.setFilesViewMode)
 
 	const currentDir: Dir | undefined = currentDirs.at(-1)
 
@@ -50,7 +51,7 @@ export function CurrentDirsBreadcrumbs(): ReactNode {
 					)}
 					onClick={handleAccountsClick}
 				>
-					<StorageRounded className="!size-5" />
+					<AccountBoxRounded className="!size-5" />
 					Tài khoản
 				</div>
 
@@ -66,7 +67,7 @@ export function CurrentDirsBreadcrumbs(): ReactNode {
 					>
 						{index === 0 && (
 							<>
-								{!isInTrash && <HomeRounded className="!size-5" />}
+								{!isInTrash && <StorageRounded className="!size-5" />}
 								{isInTrash && <DeleteRounded className="!size-5" />}
 							</>
 						)}

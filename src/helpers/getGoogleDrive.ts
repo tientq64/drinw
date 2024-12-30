@@ -1,5 +1,5 @@
 import { drive_v3, google } from 'googleapis'
-import { Account } from '../store/useAppStore'
+import { Account } from '../store/types'
 import { getGoogleAuth } from './getGoogleAuth'
 
 export type Drive = drive_v3.Drive

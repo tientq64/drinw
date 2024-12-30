@@ -1,114 +1,51 @@
-import { readJsonSync } from 'fs-extra'
-import { findIndex } from 'lodash-es'
+import { produce, WritableDraft } from 'immer'
 import { create } from 'zustand'
-import { immer } from 'zustand/middleware/immer'
 import { FilesViewModeEnum } from '../constants/filesViewModes'
+import { loadAppData } from './loadAppData'
+import { Account, Dir, UploadItem } from './types'
+import { convertToBytes } from '../utils/convertToBytes'
 
-export type Kind = 'youtube' | 'tiktok' | 'spankbang' | 'facebook' | 'mrcong'
-
-export interface Account {
-	clientEmail: string
-	title?: string
-	kind?: Kind
-	mainDirId?: string
-	tiktokUsernameFirstLetter?: string
-	driveSize: number
-	trashSize: number
-	privateKey: string
-}
-
-export interface Dir {
-	dirId: string
-	dirName: string
-}
-
-export interface AppStoreState {
+export interface AppStore {
 	masterEmail: string
 	accounts: Account[]
 	currentAccount: Account | undefined
 	currentDirs: Dir[]
 	isInTrash: boolean
 	filesViewMode: FilesViewModeEnum
+	uploadItems: UploadItem[]
+	isSmartUpload: boolean
+	maxUploadingSize: number
+	maxUploadingParallel: number
 }
 
-export interface AppStoreActions {
-	setMasterEmail(masterEmail: string): void
-	addAccount(account: Account): void
-	setCurrentAccount(currentAccount: Account | undefined): void
-	pushCurrentDirs(...dirs: Dir[]): void
-	jumpCurrentDirs(dirId: string): void
-	emptyCurrentDirs(): void
-	setIsInTrash(isInTrash: boolean): void
-	setFilesViewMode(filesViewMode: FilesViewModeEnum): void
-}
-
-export type AppStore = AppStoreState & AppStoreActions
-
-export const useAppStore = create<AppStore>()(
-	immer((set) => ({
-		masterEmail: '',
-		accounts: [],
-		currentAccount: undefined,
-		currentDirs: [],
-		isInTrash: false,
-		filesViewMode: FilesViewModeEnum.List,
-
-		setMasterEmail(masterEmail) {
-			set({ masterEmail })
-		},
-		addAccount(account) {
-			account = structuredClone(account)
-			set((state) => {
-				state.accounts.push(account)
-			})
-		},
-		setCurrentAccount(currentAccount) {
-			set({ currentAccount })
-		},
-		pushCurrentDirs(...dirs) {
-			set((state) => {
-				state.currentDirs.push(...dirs)
-			})
-		},
-		jumpCurrentDirs(dirId) {
-			set((state) => {
-				const index: number = findIndex(state.currentDirs, { dirId })
-				if (index === -1) return
-				state.currentDirs.splice(index + 1)
-			})
-		},
-		emptyCurrentDirs() {
-			set({ currentDirs: [] })
-		},
-		setIsInTrash(isInTrash) {
-			set({ isInTrash })
-		},
-		setFilesViewMode(filesViewMode) {
-			set({ filesViewMode })
-		}
-	}))
-)
-
-export type AppData = Pick<AppStore, 'masterEmail' | 'accounts'>
-
-const defaultAppData: AppData = {
+const defaultAppStore: AppStore = {
 	masterEmail: '',
-	accounts: []
+	accounts: [],
+	currentAccount: undefined,
+	currentDirs: [],
+	isInTrash: false,
+	filesViewMode: FilesViewModeEnum.List,
+	uploadItems: [],
+	isSmartUpload: true,
+	maxUploadingSize: convertToBytes(500, 'MB'),
+	maxUploadingParallel: 10
 }
 
-let jsonAppData: Partial<AppData>
-try {
-	jsonAppData = readJsonSync('data/appData.json')
-} catch {
-	jsonAppData = {}
-}
-const appData: AppData = {
-	...defaultAppData,
-	...jsonAppData
+export const useAppStore = create<AppStore>(() => defaultAppStore)
+
+export function setState(
+	partial: AppStore | Partial<AppStore> | ((draft: WritableDraft<AppStore>) => void),
+	replace?: false
+): void {
+	if (typeof partial === 'function') {
+		const draftPartial: (state: AppStore) => AppStore | Partial<AppStore> = (state) =>
+			produce(state, partial)
+		useAppStore.setState(draftPartial, replace)
+	} else {
+		useAppStore.setState(partial, replace)
+	}
 }
 
-const appStore = useAppStore.getState()
-appStore.setMasterEmail(appData.masterEmail)
-for (const account of appData.accounts) {
-	appStore.addAccount(account)
-}
+export const getState = useAppStore.getState
+
+loadAppData()

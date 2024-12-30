@@ -6,6 +6,9 @@ import { createTheme, Theme, ThemeProvider } from '@mui/material'
 const darkTheme: Theme = createTheme({
 	palette: {
 		mode: 'dark'
+	},
+	typography: {
+		fontFamily: 'IBM Plex Sans, Roboto, sans-serif'
 	}
 })
 

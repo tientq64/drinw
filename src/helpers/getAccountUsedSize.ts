@@ -1,5 +1,4 @@
-import { TOTAL_SIZE } from '../constants/constants'
-import { Account } from '../store/useAppStore'
+import { Account } from '../store/types'
 import { getAccountSizeRatio } from './getAccountSizeRatio'
 
 export function getAccountUsedSize(account: Account, ratio?: number): number {
