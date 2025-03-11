@@ -38,9 +38,9 @@ const colorToClassNamesMap: Record<ContextMenuColor, ContextMenuColorClassNames>
 function getColorClassNames(contextMenuColor?: ContextMenuColor): ContextMenuColorClassNames {
 	return contextMenuColor === undefined
 		? {
-				text: '!text-zinc-300',
+				text: '!text-zinc-100',
 				icon: '!text-white'
-		  }
+			}
 		: colorToClassNamesMap[contextMenuColor]
 }
 
@@ -139,6 +139,9 @@ export function ContextMenu({
 			<Portal>
 				<Menu
 					open={isOpen}
+					classes={{
+						paper: '!bg-zinc-700 ContextMenu'
+					}}
 					anchorReference="anchorPosition"
 					anchorPosition={position}
 					transitionDuration={{
@@ -150,7 +153,6 @@ export function ContextMenu({
 							onMouseDown: close
 						},
 						paper: {
-							className: '!bg-zinc-800 ContextMenu',
 							onMouseDown: (event) => event.stopPropagation(),
 							onClick: close
 						}

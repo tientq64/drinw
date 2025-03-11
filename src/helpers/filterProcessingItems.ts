@@ -3,6 +3,5 @@ import { UploadItem } from '../store/types'
 import { checkIsProcessingItem } from './checkIsProcessingItem'
 
 export function filterProcessingItems(uploadItems: UploadItem[]): UploadItem[] {
-	const uploadingItems: UploadItem[] = filter(uploadItems, checkIsProcessingItem)
-	return uploadingItems
+	return filter(uploadItems, checkIsProcessingItem)
 }

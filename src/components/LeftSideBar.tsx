@@ -5,6 +5,7 @@ import {
 	StorageRounded
 } from '@mui/icons-material'
 import { Divider, List, ListItemButton, ListItemIcon, ListSubheader } from '@mui/material'
+import { nanoid } from 'nanoid'
 import { ReactNode } from 'react'
 import { useMatch, useNavigate } from 'react-router'
 import { setIsInTrash } from '../store/setIsInTrash'
@@ -16,7 +17,7 @@ export function LeftSideBar(): ReactNode {
 
 	const navigate = useNavigate()
 	const accountsPathMatch = useMatch('/accounts')
-	const drivePathMatch = useMatch('/drive')
+	const drivePathMatch = useMatch('/drive/:randomId?')
 	const settingsPathMatch = useMatch('/settings')
 
 	const handleDriveClick = (): void => {

@@ -1,8 +1,9 @@
+import { GaxiosPromise, GaxiosResponse } from 'gaxios'
+import { Drive, DriveFileList, getGoogleDrive } from '../helpers/getGoogleDrive'
+import { makeDriveQuery } from '../helpers/makeDriveQuery'
 import { Account } from '../store/types'
-import { Drive, getGoogleDrive } from './getGoogleDrive'
-import { makeDriveQuery } from './makeDriveQuery'
 
-export interface Options {
+export interface GetFilesOptions {
 	dirId: string
 	name?: string
 	mimeType?: 'folder' | 'file'
@@ -24,8 +25,8 @@ export async function getFiles(
 		orderBy = 'folder,createdTime desc',
 		pageSize,
 		pageToken
-	}: Options
-) {
+	}: GetFilesOptions
+): GaxiosPromise<DriveFileList> {
 	const drive: Drive = getGoogleDrive(account)
 
 	const q: string = makeDriveQuery(

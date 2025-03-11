@@ -9,21 +9,25 @@ import {
 	UploadFileRounded
 } from '@mui/icons-material'
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
-import { useInViewport, useRequest } from 'ahooks'
+import { useInViewport, useRequest, useUpdateEffect } from 'ahooks'
+import { nanoid } from 'nanoid'
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router'
+import { Navigate, useNavigate, useParams } from 'react-router'
+import { createDir } from '../api/createDir'
+import { getFiles } from '../api/getFiles'
 import { ContextMenu, ContextMenuItem } from '../components/ContextMenu'
 import { FileItem } from '../components/FileItem'
-import { DRIVE_DIR_MIME_TYPE } from '../constants/constants'
+import { DRIVE_DIR_MIME_TYPE, FILE_FIELDS } from '../constants/constants'
 import { FilesViewModeEnum } from '../constants/filesViewModes'
+import { dirNameSchema } from '../constants/validationSchemas'
 import { getAccountClientEmailName } from '../helpers/getAccountClientEmailName'
-import { getFiles } from '../helpers/getFiles'
 import { DriveFile } from '../helpers/getGoogleDrive'
+import { usePrompt } from '../hooks/usePrompt'
 import { useUploadViaUrlDialog } from '../hooks/useUploadViaUrlDialog'
-import { jumpCurrentDirs } from '../store/jumpCurrentDirs'
-import { pushCurrentDirs } from '../store/pushCurrentDirs'
+import { addBreadcrumbItem } from '../store/addBreadcrumbItem'
+import { jumpToBreadcrumbItem } from '../store/jumpToBreadcrumbItem'
 import { setIsInTrash } from '../store/setIsInTrash'
-import { Dir } from '../store/types'
+import { BreadcrumbItem } from '../store/types'
 import { useAppStore } from '../store/useAppStore'
 
 export function DrivePage(): ReactNode {
@@ -34,27 +38,30 @@ export function DrivePage(): ReactNode {
 
 	const emailName: string = getAccountClientEmailName(currentAccount)
 
-	const currentDirs = useAppStore((state) => state.currentDirs)
-	const currentDir: Dir | undefined = currentDirs.at(-1)
-	if (currentDir === undefined) return
+	const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
+	const currentBreadcrumbItem: BreadcrumbItem | undefined = breadcrumbItems.at(-1)
+	if (currentBreadcrumbItem === undefined) return
 
 	const isInTrash = useAppStore((state) => state.isInTrash)
 	const filesViewMode = useAppStore((state) => state.filesViewMode)
 
-	const filesGetter = useRequest(getFiles, { manual: true })
+	const getFilesApi = useRequest(getFiles, { manual: true })
 	const navigate = useNavigate()
 	const [files, setFiles] = useState<DriveFile[]>([])
-	const getFilesIter = useRef<AsyncGenerator | undefined>(undefined)
+	const filesIterator = useRef<AsyncGenerator | undefined>(undefined)
 	const [nextPageToken, setNextPageToken] = useState<string | undefined>(undefined)
 	const loadMoreRef = useRef<HTMLDivElement | null>(null)
 	const [isLoadMoreInViewport] = useInViewport(loadMoreRef)
 	const uploadViaUrlDialog = useUploadViaUrlDialog()
+	const createDirPrompt = usePrompt()
+	const createDirApi = useRequest(createDir, { manual: true })
+	const { randomId } = useParams()
 
-	const canLoadMore: boolean = nextPageToken !== undefined && !filesGetter.loading
+	const canLoadMore: boolean = nextPageToken !== undefined && !getFilesApi.loading
 
 	const loadFiles = () => {
-		getFilesIter.current = getFilesIterator()
-		getFilesIter.current.next()
+		filesIterator.current = getFilesIterator()
+		filesIterator.current.next()
 	}
 
 	const getFilesIterator = async function* () {
@@ -62,10 +69,12 @@ export function DrivePage(): ReactNode {
 		setFiles([])
 		setNextPageToken(undefined)
 		do {
-			const result = await filesGetter.runAsync(currentAccount, {
-				dirId: currentDir.dirId,
+			const result = await getFilesApi.runAsync(currentAccount, {
+				dirId: currentBreadcrumbItem.dirId,
 				trashed: isInTrash,
-				fields: 'files(id,name,mimeType,size,description,thumbnailLink,webViewLink,imageMediaMetadata(width,height),videoMediaMetadata(width,height,durationMillis)),nextPageToken',
+				fields: `files(${FILE_FIELDS}),nextPageToken`,
+				orderBy: 'folder,createdTime desc',
+				pageSize: 100,
 				pageToken
 			})
 			pageToken = result.data.nextPageToken ?? undefined
@@ -74,14 +83,45 @@ export function DrivePage(): ReactNode {
 			const pushedFiles: DriveFile[] = result.data.files
 			setFiles((files) => [...files, ...pushedFiles])
 			yield
-		} while (pageToken != null)
+		} while (pageToken !== undefined)
+	}
+
+	const checkFileBelongsToCurrentFiles = (file: DriveFile): boolean => {
+		if (file.parents == null) {
+			return false
+		}
+		return file.parents.includes(currentBreadcrumbItem.dirId)
+	}
+
+	const addFileToFiles = (...addedFiles: DriveFile[]): void => {
+		const file: DriveFile | undefined = addedFiles.at(0)
+		if (file === undefined) return
+		if (file.trashed !== isInTrash) return
+		if (!checkFileBelongsToCurrentFiles(file)) return
+		setFiles((files) => {
+			return getSortedFiles([...files, ...addedFiles])
+		})
+	}
+
+	const getSortedFiles = (unsortedFiles: DriveFile[]): DriveFile[] => {
+		const sortedFiles: DriveFile[] = unsortedFiles.toSorted((fileA, fileB) => {
+			const isDirA: boolean = fileA.mimeType === DRIVE_DIR_MIME_TYPE
+			const isDirB: boolean = fileB.mimeType === DRIVE_DIR_MIME_TYPE
+			if (isDirA !== isDirB) {
+				return isDirA ? -1 : 1
+			}
+			const dateA: Date = new Date(fileA.createdTime ?? 0)
+			const dateB: Date = new Date(fileB.createdTime ?? 0)
+			return Number(dateB) - Number(dateA)
+		})
+		return sortedFiles
 	}
 
 	const handleFileDoubleClick = (file: DriveFile): void => {
 		if (file.mimeType === DRIVE_DIR_MIME_TYPE) {
 			if (isInTrash) return
 			if (file.id == null || file.name == null) return
-			pushCurrentDirs({
+			addBreadcrumbItem({
 				dirId: file.id,
 				dirName: file.name
 			})
@@ -89,19 +129,31 @@ export function DrivePage(): ReactNode {
 	}
 
 	const handleGoParentDoubleClick = (): void => {
-		const dir: Dir | undefined = currentDirs.at(-2)
+		const dir: BreadcrumbItem | undefined = breadcrumbItems.at(-2)
 		if (dir === undefined) {
 			navigate('/accounts')
 		} else {
-			jumpCurrentDirs(dir.dirId)
+			jumpToBreadcrumbItem(dir.dirId)
 		}
+	}
+
+	const handleCreateNewDir = async (): Promise<void> => {
+		const newDirName: string | null = await createDirPrompt.open(
+			'Tên thư mục mới',
+			'',
+			dirNameSchema
+		)
+		if (newDirName === null) return
+		createDirApi.runAsync(currentAccount, newDirName, currentBreadcrumbItem.dirId)
 	}
 
 	const driveContextMenuItems: ContextMenuItem[] = [
 		{
 			title: 'Làm mới',
 			icon: <RefreshRounded />,
-			click: loadFiles
+			click: () => {
+				navigate('/drive/' + nanoid())
+			}
 		},
 		{
 			divider: true
@@ -114,7 +166,7 @@ export function DrivePage(): ReactNode {
 			title: 'Tải lên thông qua URL',
 			icon: <CloudUploadRounded />,
 			click: () => {
-				uploadViaUrlDialog.open(currentAccount, currentDir.dirId)
+				uploadViaUrlDialog.open(currentAccount, currentBreadcrumbItem.dirId)
 			}
 		},
 		{
@@ -122,7 +174,8 @@ export function DrivePage(): ReactNode {
 		},
 		{
 			title: 'Thư mục mới',
-			icon: <CreateNewFolderRounded />
+			icon: <CreateNewFolderRounded />,
+			click: handleCreateNewDir
 		},
 		{
 			divider: true
@@ -163,20 +216,21 @@ export function DrivePage(): ReactNode {
 
 	useEffect(() => {
 		loadFiles()
-	}, [currentDir.dirId, isInTrash])
+	}, [currentBreadcrumbItem.dirId, isInTrash])
 
 	useEffect(() => {
 		if (!isLoadMoreInViewport) return
 		if (!canLoadMore) return
-		getFilesIter.current?.next()
+		filesIterator.current?.next()
 	}, [isLoadMoreInViewport])
 
 	useEffect(() => {
+		if (randomId !== undefined) return
 		if (isInTrash) {
-			jumpCurrentDirs('root')
+			jumpToBreadcrumbItem('root')
 		} else {
-			if (currentDir.dirId === 'root' && currentAccount.mainDirId) {
-				pushCurrentDirs({
+			if (currentBreadcrumbItem.dirId === 'root' && currentAccount.mainDirId) {
+				addBreadcrumbItem({
 					dirId: currentAccount.mainDirId,
 					dirName: emailName
 				})
@@ -184,10 +238,20 @@ export function DrivePage(): ReactNode {
 		}
 	}, [isInTrash])
 
+	useUpdateEffect(() => {
+		const newDir: DriveFile | undefined = createDirApi.data
+		if (newDir === undefined) return
+		addFileToFiles(newDir)
+	}, [createDirApi.data])
+
+	useUpdateEffect(() => {
+		navigate('/drive/' + nanoid(), { replace: true })
+	}, [currentBreadcrumbItem.dirId])
+
 	return (
 		<>
 			<ContextMenu menuItems={isInTrash ? trashContextMenuItems : driveContextMenuItems}>
-				<div key={currentDir.dirId} className="flex-1 h-full overflow-auto">
+				<div key={currentBreadcrumbItem.dirId} className="h-full flex-1 overflow-auto">
 					{filesViewMode === FilesViewModeEnum.List && (
 						<Table stickyHeader size="small">
 							<TableHead>
@@ -196,13 +260,13 @@ export function DrivePage(): ReactNode {
 									<TableCell width="50%">Tên</TableCell>
 									<TableCell width="12%">Dung lượng</TableCell>
 									<TableCell width="16%">Loại</TableCell>
-									<TableCell width="8%">Thời lượng</TableCell>
-									<TableCell width="14%">Kích cỡ</TableCell>
+									<TableCell width="9%">Thời lượng</TableCell>
+									<TableCell width="13%">Kích cỡ</TableCell>
 								</TableRow>
 							</TableHead>
 
-							<TableBody className="select-none cursor-default">
-								<TableRow hover>
+							<TableBody className="cursor-default select-none">
+								<TableRow className="truncate" hover>
 									<TableCell
 										colSpan={6}
 										onDoubleClick={handleGoParentDoubleClick}
@@ -240,18 +304,19 @@ export function DrivePage(): ReactNode {
 						</div>
 					)}
 
-					{(filesGetter.loading || nextPageToken !== undefined) && (
+					{(getFilesApi.loading || nextPageToken !== undefined) && (
 						<div ref={loadMoreRef} className="py-2 text-center text-zinc-400">
 							Đang tải...
 						</div>
 					)}
 
-					{files.length === 0 && !filesGetter.loading && (
+					{files.length === 0 && !getFilesApi.loading && (
 						<div className="py-2 text-center text-zinc-500">Thư mục trống</div>
 					)}
 				</div>
 			</ContextMenu>
 
+			{createDirPrompt.dialog}
 			{uploadViaUrlDialog.dialog}
 		</>
 	)

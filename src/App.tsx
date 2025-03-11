@@ -9,6 +9,23 @@ const darkTheme: Theme = createTheme({
 	},
 	typography: {
 		fontFamily: 'IBM Plex Sans, Roboto, sans-serif'
+	},
+	components: {
+		MuiPaper: {
+			styleOverrides: {
+				root: {
+					backgroundImage: 'none',
+					boxShadow: 'none'
+				}
+			}
+		},
+		MuiDialog: {
+			defaultProps: {
+				classes: {
+					paper: '!bg-zinc-800'
+				}
+			}
+		}
 	}
 })
 

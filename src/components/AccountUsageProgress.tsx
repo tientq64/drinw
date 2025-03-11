@@ -7,7 +7,7 @@ import { getAccountUsedSize } from '../helpers/getAccountUsedSize'
 import { Account } from '../store/types'
 import { formatSize } from '../utils/formatSize'
 
-interface Props extends LinearProgressProps {
+interface AccountUsageProgressProps extends LinearProgressProps {
 	account: Account
 	className?: string
 }
@@ -17,7 +17,7 @@ export function AccountUsageProgress({
 	className,
 	classes,
 	...progressProps
-}: Props): ReactNode {
+}: AccountUsageProgressProps): ReactNode {
 	const usedSize: number = getAccountUsedSize(account)
 	const usedPercent: number = getAccountSizeRatio(usedSize, 100)
 

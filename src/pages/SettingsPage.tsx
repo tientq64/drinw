@@ -9,13 +9,14 @@ import {
 } from '@mui/material'
 import { useFormik } from 'formik'
 import { ReactNode, useId } from 'react'
-import { object, string } from 'yup'
+import { object } from 'yup'
 import { FilesViewModeEnum, filesViewModes } from '../constants/filesViewModes'
+import { masterEmailSchema } from '../constants/validationSchemas'
 import { setFilesViewMode } from '../store/setFilesViewMode'
 import { useAppStore } from '../store/useAppStore'
 
 interface SettingValues {
-	masterEmail: string
+	masterEmail: string | undefined
 }
 
 export function SettingsPage(): ReactNode {
@@ -39,7 +40,7 @@ export function SettingsPage(): ReactNode {
 			masterEmail
 		},
 		validationSchema: object({
-			masterEmail: string().email('Email không hợp lệ')
+			masterEmail: masterEmailSchema
 		}),
 		onSubmit: handleSubmit
 	})

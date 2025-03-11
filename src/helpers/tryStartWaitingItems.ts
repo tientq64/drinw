@@ -6,7 +6,7 @@ import { filterFetchingItems } from './filterFetchingItems'
 import { filterProcessingItems } from './filterProcessingItems'
 import { filterWaitingItems } from './filterWaitingItems'
 
-export function tryStartPendingItems(): void {
+export function tryStartWaitingItems(): void {
 	setState((state) => {
 		const maxUploadingSize: number = state.maxUploadingSize
 		const maxUploadingParallel: number = state.maxUploadingParallel

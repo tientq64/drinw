@@ -13,7 +13,7 @@ import { nanoid } from 'nanoid'
 import { useState } from 'react'
 import { object, string } from 'yup'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { pushUploadItems } from '../store/pushUploadItems'
+import { addUploadItem } from '../store/addUploadItem'
 import { Account } from '../store/types'
 import { useAppStore } from '../store/useAppStore'
 
@@ -28,8 +28,19 @@ export function useUploadViaUrlDialog() {
 	const [account, setAccount] = useState<Account | undefined>(undefined)
 	const [destDirId, setDestDirId] = useState<string | undefined>(undefined)
 
+	const open = (account?: Account, destDirId?: string): void => {
+		setAccount(account)
+		setDestDirId(destDirId)
+		setIsOpen(true)
+	}
+
+	const close = (): void => {
+		setIsOpen(false)
+		form.resetForm()
+	}
+
 	const handleSubmit = ({ url }: UploadViaUrlDialogValues): void => {
-		pushUploadItems({
+		addUploadItem({
 			id: nanoid(),
 			isSmartUpload,
 			status: UploadStatusEnum.Pending,
@@ -50,17 +61,6 @@ export function useUploadViaUrlDialog() {
 		}),
 		onSubmit: handleSubmit
 	})
-
-	const open = (account?: Account, destDirId?: string): void => {
-		setAccount(account)
-		setDestDirId(destDirId)
-		setIsOpen(true)
-	}
-
-	const close = (): void => {
-		setIsOpen(false)
-		form.resetForm()
-	}
 
 	const dialog = (
 		<Dialog open={isOpen} onClose={close}>
@@ -88,5 +88,5 @@ export function useUploadViaUrlDialog() {
 		</Dialog>
 	)
 
-	return { open, isOpen, dialog }
+	return { isOpen, open, dialog }
 }

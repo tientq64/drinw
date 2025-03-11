@@ -9,13 +9,14 @@ import {
 	TableRow
 } from '@mui/material'
 import clsx from 'clsx'
+import { nanoid } from 'nanoid'
 import { ReactNode, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { AccountUsageProgress } from '../components/AccountUsageProgress'
 import { ContextMenu } from '../components/ContextMenu'
 import { getAccountClientEmailName } from '../helpers/getAccountClientEmailName'
-import { emptyCurrentDirs } from '../store/emptyCurrentDirs'
-import { pushCurrentDirs } from '../store/pushCurrentDirs'
+import { addBreadcrumbItem } from '../store/addBreadcrumbItem'
+import { emptyBreadcrumbItems } from '../store/emptyBreadcrumbItems'
 import { setCurrentAccount } from '../store/setCurrentAccount'
 import { setIsInTrash } from '../store/setIsInTrash'
 import { Account } from '../store/types'
@@ -29,7 +30,7 @@ export function AccountsPage(): ReactNode {
 	const handleAccountClick = (account: Account): void => {
 		const emailName: string = getAccountClientEmailName(account)
 		setCurrentAccount(account)
-		pushCurrentDirs({
+		addBreadcrumbItem({
 			dirId: 'root',
 			dirName: account.title || emailName
 		})
@@ -38,7 +39,7 @@ export function AccountsPage(): ReactNode {
 
 	useEffect(() => {
 		setCurrentAccount(undefined)
-		emptyCurrentDirs()
+		emptyBreadcrumbItems()
 		setIsInTrash(false)
 	}, [])
 
@@ -76,7 +77,8 @@ export function AccountsPage(): ReactNode {
 									},
 									{
 										title: 'Xóa',
-										icon: <DeleteRounded />
+										icon: <DeleteRounded />,
+										color: 'red'
 									}
 								]}
 							>

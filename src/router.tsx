@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router'
+import { createBrowserRouter, Navigate, useParams } from 'react-router'
 import { AccountsPage } from './pages/AccountsPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { DrivePage } from './pages/DrivePage'
@@ -18,8 +18,8 @@ export const router = createBrowserRouter([
 				element: <SettingsPage />
 			},
 			{
-				path: 'drive',
-				element: <DrivePage />
+				path: 'drive/:randomId?',
+				Component: () => <DrivePage key={useParams().randomId} />
 			},
 			{
 				index: true,

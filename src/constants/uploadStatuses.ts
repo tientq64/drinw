@@ -40,7 +40,7 @@ export const uploadStatuses: UploadStatus[] = [
 	},
 	{
 		name: UploadStatusEnum.Failed,
-		text: 'Lỗi'
+		text: 'Thất bại'
 	}
 ]
 
@@ -49,7 +49,7 @@ export function getUploadStatus(name: UploadStatusEnum): UploadStatus {
 		return status.name === name
 	})
 	if (uploadStatus === undefined) {
-		throw Error(`Trạng thái "${name}" không hợp lệ`)
+		throw Error(`Trạng thái "${name}" là không hợp lệ`)
 	}
 	return uploadStatus
 }

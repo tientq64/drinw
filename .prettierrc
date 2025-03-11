@@ -7,5 +7,10 @@
 	"singleQuote": true,
 	"tabWidth": 4,
 	"trailingComma": "none",
-	"useTabs": true
+	"useTabs": true,
+	"plugins": ["prettier-plugin-jsdoc", "prettier-plugin-tailwindcss"],
+	"jsdocCommentLineStrategy": "multiline",
+	"jsdocDescriptionWithDot": true,
+	"jsdocPrintWidth": 90,
+	"tailwindFunctions": ["clsx"]
 }

@@ -8,27 +8,27 @@ import {
 import { Breadcrumbs, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
-import { useNavigate } from 'react-router'
+import { useMatch, useNavigate } from 'react-router'
 import { filesViewModes } from '../constants/filesViewModes'
-import { jumpCurrentDirs } from '../store/jumpCurrentDirs'
+import { jumpToBreadcrumbItem } from '../store/jumpToBreadcrumbItem'
 import { setFilesViewMode } from '../store/setFilesViewMode'
-import { Dir } from '../store/types'
+import { BreadcrumbItem } from '../store/types'
 import { useAppStore } from '../store/useAppStore'
 import { AccountUsageProgress } from './AccountUsageProgress'
 
-export function CurrentDirsBreadcrumbs(): ReactNode {
-	const currentDirs = useAppStore((state) => state.currentDirs)
+export function BreadcrumbItems(): ReactNode {
+	const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
 	const currentAccount = useAppStore((state) => state.currentAccount)
 	const isInTrash = useAppStore((state) => state.isInTrash)
 	const filesViewMode = useAppStore((state) => state.filesViewMode)
 
-	const currentDir: Dir | undefined = currentDirs.at(-1)
-
+	const drivePathMatch = useMatch('/drive/:randomId?')
 	const navigate = useNavigate()
 
-	const handleCurrentDirClick = (dir: Dir): void => {
-		jumpCurrentDirs(dir.dirId)
-		navigate('/drive')
+	const currentBreadcrumbItem: BreadcrumbItem | undefined = breadcrumbItems.at(-1)
+
+	const handleBreadcrumbItemClick = (breadcrumbItem: BreadcrumbItem): void => {
+		jumpToBreadcrumbItem(breadcrumbItem.dirId)
 	}
 
 	const handleAccountsClick = (): void => {
@@ -46,8 +46,8 @@ export function CurrentDirsBreadcrumbs(): ReactNode {
 				<div
 					className={clsx(
 						'flex items-center gap-2',
-						currentDir !== undefined && 'hover:underline cursor-pointer',
-						currentDir === undefined && 'text-white pointer-events-none'
+						currentBreadcrumbItem !== undefined && 'hover:underline cursor-pointer',
+						currentBreadcrumbItem === undefined && 'text-white pointer-events-none'
 					)}
 					onClick={handleAccountsClick}
 				>
@@ -55,15 +55,17 @@ export function CurrentDirsBreadcrumbs(): ReactNode {
 					Tài khoản
 				</div>
 
-				{currentDirs.map((dir, index) => (
+				{breadcrumbItems.map((breadcrumbItem, index) => (
 					<div
-						key={dir.dirId}
+						key={breadcrumbItem.dirId}
 						className={clsx(
 							'flex items-center gap-2',
-							dir !== currentDir && 'hover:underline cursor-pointer',
-							dir === currentDir && 'text-white pointer-events-none'
+							breadcrumbItem !== currentBreadcrumbItem &&
+								'hover:underline cursor-pointer',
+							breadcrumbItem === currentBreadcrumbItem &&
+								'text-white pointer-events-none'
 						)}
-						onClick={() => handleCurrentDirClick(dir)}
+						onClick={() => handleBreadcrumbItemClick(breadcrumbItem)}
 					>
 						{index === 0 && (
 							<>
@@ -73,7 +75,7 @@ export function CurrentDirsBreadcrumbs(): ReactNode {
 						)}
 						{index === 1 && <FolderSharedRounded className="!size-5 text-amber-500" />}
 						{index > 1 && <FolderRounded className="!size-5 text-amber-500" />}
-						{dir.dirName}
+						{breadcrumbItem.dirName}
 					</div>
 				))}
 			</Breadcrumbs>
