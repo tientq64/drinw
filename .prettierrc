@@ -1,0 +1,16 @@
+{
+    "arrowParens": "always",
+    "endOfLine": "lf",
+    "jsxSingleQuote": false,
+    "printWidth": 100,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "none",
+    "useTabs": false,
+    "plugins": ["prettier-plugin-jsdoc", "prettier-plugin-tailwindcss"],
+    "jsdocCommentLineStrategy": "multiline",
+    "jsdocDescriptionWithDot": true,
+    "jsdocPrintWidth": 90,
+    "tailwindFunctions": ["clsx"]
+}

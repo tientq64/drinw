@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,200');
+
+@tailwind base;
+@tailwind utilities;
+
+@layer utilities {
+    .app-region-drag {
+        -webkit-app-region: drag;
+    }
+}
+
+body {
+    color-scheme: dark;
+}
+
+.material-symbols-rounded {
+    font-size: 20px !important;
+    vertical-align: -0.25em !important;
+}
+
+.ant-modal {
+    .ant-modal-content {
+        background-clip: unset;
+        box-shadow: none;
+    }
+}
+
+.ant-menu-vertical {
+    > .ant-menu-item {
+        height: 32px;
+        line-height: 32px;
+    }
+}
+
+.ant-menu-inline-collapsed {
+    > .ant-menu-item {
+        padding-inline: calc(50% - 8px - 6px);
+
+        .ant-menu-item-icon {
+            line-height: 32px;
+        }
+    }
+}
