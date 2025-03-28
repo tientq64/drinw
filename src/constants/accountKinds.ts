@@ -8,10 +8,13 @@ export const enum AccountKindEnum {
 
 export interface AccountKind {
     name: AccountKindEnum
-    iconUrl: string
+    iconUrl?: string
 }
 
 export const accountKinds: AccountKind[] = [
+    {
+        name: AccountKindEnum.None
+    },
     {
         name: AccountKindEnum.YouTube,
         iconUrl: 'https://www.google.com/s2/favicons?sz=64&domain=youtube.com'
@@ -27,16 +30,14 @@ export const accountKinds: AccountKind[] = [
     {
         name: AccountKindEnum.Facebook,
         iconUrl: 'https://www.google.com/s2/favicons?sz=64&domain=facebook.com'
-    },
-    {
-        name: AccountKindEnum.None,
-        iconUrl: ''
     }
 ]
 
 export function getAccountKind(name: AccountKindEnum): AccountKind
-export function getAccountKind(name: string): AccountKind | undefined
+export function getAccountKind(name: string | undefined): AccountKind | undefined
 
-export function getAccountKind(name: AccountKindEnum | string = ''): AccountKind | undefined {
+export function getAccountKind(
+    name: AccountKindEnum | string | undefined = ''
+): AccountKind | undefined {
     return accountKinds.find((accountKind) => accountKind.name === name)
 }

@@ -1,7 +1,8 @@
+import { useRequest } from 'ahooks'
 import { Form, Input, Modal } from 'antd'
 import { ReactElement, useEffect, useState } from 'react'
+import { createDir } from '../api/createDir'
 import { DriveFile } from '../helpers/getGoogleDrive'
-import { useAppStore } from '../store/useAppStore'
 import { Account } from '../store/types'
 import { stopPropagation } from '../utils/stopPropagation'
 
@@ -10,13 +11,12 @@ interface Values {
 }
 
 export function useCreateDirModal(parentDir: DriveFile, account: Account) {
-    const currentFiles = useAppStore((state) => state.currentFiles)
-
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
 
     const handleFormSubmit = ({ dirName }: Values): void => {
         close()
+        createDir(account, parentDir, dirName)
     }
 
     const close = (): void => {
@@ -52,7 +52,7 @@ export function useCreateDirModal(parentDir: DriveFile, account: Account) {
                             }
                         ]}
                     >
-                        <Input spellCheck={false} />
+                        <Input />
                     </Form.Item>
                 </Form>
             </Modal>

@@ -25,6 +25,15 @@ body {
     }
 }
 
+.ant-message {
+    top: 16px !important;
+}
+.dnw-unmaximized {
+    .ant-message {
+        top: 24px !important;
+    }
+}
+
 .ant-menu-vertical {
     > .ant-menu-item {
         height: 32px;

@@ -1,18 +1,17 @@
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { folderMime } from '../constants/constants'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
 import { DriveFile } from '../helpers/getGoogleDrive'
-import { StateLocation } from '../types/types'
+import { useAppStore } from '../store/useAppStore'
 import { useCurrentDir } from './useCurrentDir'
 import { rootDir, useDriveNavigate } from './useDriveNavigate'
-import { folderMime } from '../constants/constants'
 
 export function useDriveNavigateToMainDir(): void {
-    const location: StateLocation = useLocation()
-    if (location.state === undefined) return
-
-    const { currentAccount, inTrash, breadcrumbItems } = location.state
+    const currentAccount = useAppStore((state) => state.currentAccount)
     if (currentAccount === undefined) return
+
+    const inTrash = useAppStore((state) => state.inTrash)
+    const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
 
     const currentDir = useCurrentDir()
     if (currentDir === undefined) return

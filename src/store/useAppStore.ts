@@ -4,6 +4,7 @@ import { ViewModeEnum } from '../constants/viewModes'
 import { DriveFile } from '../helpers/getGoogleDrive'
 import { loadUserData, UserData } from '../helpers/loadUserData'
 import { Account, UploadItem } from './types'
+import { MB } from '../constants/constants'
 
 export interface AppStore {
     masterEmail: string | undefined
@@ -11,11 +12,12 @@ export interface AppStore {
     currentAccount: Account | undefined
     inTrash: boolean
     breadcrumbItems: DriveFile[]
-    currentFiles: DriveFile[] | undefined
+    currentFiles: DriveFile[]
     viewModeName: ViewModeEnum
     uploadItems: UploadItem[]
     isDefaultSmartUpload: boolean
     maxUploadQueueSize: number
+    uploadChunkSize: number
     motion: boolean
     isMaximized: boolean
 }
@@ -28,11 +30,12 @@ export const useAppStore = create<AppStore>(() => ({
     currentAccount: undefined,
     inTrash: false,
     breadcrumbItems: [],
-    currentFiles: undefined,
+    currentFiles: [],
     viewModeName: ViewModeEnum.List,
     uploadItems: [],
     isDefaultSmartUpload: true,
-    maxUploadQueueSize: 1024 * 1024 * 100,
+    maxUploadQueueSize: 100 * MB,
+    uploadChunkSize: 10 * MB,
     motion: true,
     isMaximized: true
 }))

@@ -21,18 +21,18 @@ export interface UploadItem {
     totalProgress?: number
     estimatedSize?: number
     pageUrl?: string
-    localFile?: File
+    localFilePath?: string
     account?: Account
     destDir?: DriveFile
     fileName?: string
     fileSize?: number
     fileId?: string
     userId?: string
-    userName: string
+    userName?: string
     userUrl?: string
     channelId?: string
     channelUrl?: string
     tempDownloadFilePath?: string
     uploadedFile?: DriveFile
-    failureReason?: string
+    message?: string
 }

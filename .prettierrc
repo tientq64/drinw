@@ -3,6 +3,7 @@
     "endOfLine": "lf",
     "jsxSingleQuote": false,
     "printWidth": 100,
+    "quoteProps": "preserve",
     "semi": false,
     "singleQuote": true,
     "tabWidth": 4,

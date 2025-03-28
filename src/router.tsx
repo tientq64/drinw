@@ -1,10 +1,14 @@
-import { createBrowserRouter, Navigate, useParams } from 'react-router-dom'
+import { createHashRouter, Navigate, RouterState, useParams } from 'react-router-dom'
 import { AppWindow } from './components/AppWindow'
 import { AccountsPage } from './pages/AccountsPage'
-import { SettingsPage } from './pages/SettingsPage'
 import { DrivePage } from './pages/DrivePage'
+import { SettingsPage } from './pages/SettingsPage'
+import { setBreadcrumbItems } from './store/setBreadcrumbItems'
+import { setCurrentAccount } from './store/setCurrentAccount'
+import { setInTrash } from './store/setInTrash'
+import { StateLocation } from './types/types'
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
     {
         path: '/',
         element: <AppWindow />,
@@ -28,3 +32,15 @@ export const router = createBrowserRouter([
         ]
     }
 ])
+
+function handleStateChange(state: RouterState): void {
+    const location: StateLocation = state.location
+    if (location.state == null) return
+
+    setCurrentAccount(location.state.currentAccount)
+    setInTrash(location.state.inTrash)
+    setBreadcrumbItems(location.state.breadcrumbItems)
+}
+
+router.subscribe(handleStateChange)
+handleStateChange(router.state)

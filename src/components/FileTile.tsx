@@ -49,12 +49,15 @@ export function FileTile({ file, account, style, onDoubleClick }: FileTileProps)
 
     return (
         <div className="p-1.5" style={style}>
-            <ContextMenu openClassName="border-zinc-600 bg-zinc-800" items={fileCellMenu.items}>
+            <ContextMenu
+                openClassName="border-zinc-600 bg-zinc-800 pointer-events-none"
+                items={fileCellMenu.items}
+            >
                 <Popover
-                    rootClassName="max-w-96 min-w-48 pointer-events-none"
-                    mouseEnterDelay={0.3}
+                    rootClassName="max-w-96 pointer-events-none"
+                    mouseEnterDelay={0.5}
                     arrow={false}
-                    placement="bottomLeft"
+                    placement="rightBottom"
                     content={
                         <Descriptions
                             className="[&_.ant-descriptions-view_table]:w-auto"

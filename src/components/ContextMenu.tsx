@@ -52,6 +52,7 @@ export function ContextMenu({
             openClassName={openClassName}
             onOpenChange={handleOpenChange}
             destroyPopupOnHide
+            transitionName={isOpen ? undefined : ''}
             menu={{
                 className: 'pointer-events-auto',
                 items,

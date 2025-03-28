@@ -1,12 +1,13 @@
+import { reject } from 'lodash-es'
+import { formatFileList } from '../helpers/formatFileList'
 import { DriveFile } from '../helpers/getGoogleDrive'
+import { addCurrentFile } from './addCurrentFile'
 import { setState } from './useAppStore'
 
-export function replaceCurrentFile(file: DriveFile, newFile: DriveFile): void {
+export function replaceCurrentFile(newFile: DriveFile): void {
     setState((draft) => {
-        if (draft.currentFiles === undefined) return
-
-        draft.currentFiles = draft.currentFiles.map((currentFile) => {
-            return currentFile.id === file.id ? newFile : currentFile
-        })
+        draft.currentFiles = reject(draft.currentFiles, { id: newFile.id })
+        draft.currentFiles = formatFileList([newFile, ...draft.currentFiles])
     })
+    addCurrentFile(newFile)
 }

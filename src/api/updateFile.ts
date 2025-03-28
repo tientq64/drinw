@@ -1,11 +1,13 @@
 import { driveFileFields } from '../constants/constants'
 import { Drive, DriveFile, getGoogleDrive } from '../helpers/getGoogleDrive'
+import { replaceCurrentFile } from '../store/replaceCurrentFile'
 import { Account } from '../store/types'
+import { getState } from '../store/useAppStore'
 
 export async function updateFile(
     account: Account,
     file: DriveFile,
-    updateData: DriveFile
+    updateData: Partial<DriveFile>
 ): Promise<DriveFile> {
     if (file.id == null) return file
 
@@ -17,5 +19,8 @@ export async function updateFile(
         requestBody: updateData
     })
 
-    return result.data
+    const updatedFile: DriveFile = result.data
+    replaceCurrentFile(updatedFile)
+
+    return updatedFile
 }

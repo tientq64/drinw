@@ -3,9 +3,10 @@ import { Table } from 'antd'
 import { TableRef } from 'antd/es/table'
 import { ReactNode, UIEvent, useEffect, useRef } from 'react'
 import { AccountCell } from '../components/AccountCell'
+import { AccountKindLabel } from '../components/AccountKindLabel'
 import { AccountStorageBar } from '../components/AccountStorageBar'
 import { headerBarHeight } from '../components/HeaderBar'
-import { AccountKind, AccountKindEnum, getAccountKind } from '../constants/accountKinds'
+import { AccountKindEnum } from '../constants/accountKinds'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
 import { useDriveNavigate } from '../hooks/useDriveNavigate'
 import { useWindowContentSize } from '../hooks/useWindowContentSize'
@@ -92,17 +93,12 @@ export function AccountsPage(): ReactNode {
                     {
                         title: 'Thể loại',
                         dataIndex: 'kindName',
-                        render: (value: AccountKindEnum) => {
-                            const accountKind: AccountKind = getAccountKind(value)
-                            return (
-                                <div className="flex items-center gap-2">
-                                    {accountKind.iconUrl && (
-                                        <img className="h-4" src={accountKind.iconUrl} />
-                                    )}
-                                    {value}
-                                </div>
-                            )
-                        }
+                        className: '!py-0',
+                        render: (value: AccountKindEnum, account) => (
+                            <AccountCell account={account}>
+                                <AccountKindLabel kind={value} hideNone />
+                            </AccountCell>
+                        )
                     },
                     {
                         title: 'Dung lượng',

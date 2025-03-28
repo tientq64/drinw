@@ -4,14 +4,15 @@
         {
             "label": "dev",
             "type": "shell",
-            "command": "pnpm start",
+            "command": "pnpm run dev",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "presentation": {
+                "clear": true
                 // "close": true,
-                "reveal": "silent"
+                // "reveal": "silent"
             }
         }
     ]

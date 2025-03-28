@@ -18,12 +18,7 @@ export function useUploadFromUrlModal(account: Account, destDir: DriveFile) {
     const [form] = Form.useForm<Values>()
 
     const handleFormSubmit = ({ pageUrl, isSmartUpload }: Values): void => {
-        addPageUrlToUploadQueue({
-            pageUrl,
-            isSmartUpload,
-            account,
-            destDir
-        })
+        addPageUrlToUploadQueue({ pageUrl, isSmartUpload, account, destDir })
         close()
     }
 
@@ -37,9 +32,9 @@ export function useUploadFromUrlModal(account: Account, destDir: DriveFile) {
         form.setFieldValue(
             'pageUrl',
             // 'https://www.youtube.com/watch?v=cuadlyuH610'
-            // 'https://www.youtube.com/watch?v=0Yi6RPUkUdY'
+            'https://www.youtube.com/watch?v=0Yi6RPUkUdY'
             // 'https://x.com/Rainmaker1973/status/1904070678455660617'
-            'https://www.tiktok.com/@minmin080201/video/7484511735022456082'
+            // 'https://www.tiktok.com/@minmin080201/video/7484511735022456082'
         )
         form.setFieldValue('isSmartUpload', isDefaultSmartUpload)
         setTimeout(() => {
@@ -67,7 +62,7 @@ export function useUploadFromUrlModal(account: Account, destDir: DriveFile) {
                             }
                         ]}
                     >
-                        <Input spellCheck={false} />
+                        <Input />
                     </Form.Item>
 
                     <Form.Item label={null} name="isSmartUpload" valuePropName="checked">

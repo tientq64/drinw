@@ -1,11 +1,12 @@
 import { ItemType } from 'antd/es/menu/interface'
+import { moveFileToTrash } from '../api/moveFileToTrash'
 import { Icon } from '../components/Icon'
 import { folderMime } from '../constants/constants'
 import { DriveFile } from '../helpers/getGoogleDrive'
+import { openWithBrowser } from '../helpers/openWithBrowser'
 import { Account } from '../store/types'
 import { useOpenFile } from './useOpenFile'
 import { useRenameFileModal } from './useRenameFileModal'
-import { openWithBrowser } from '../helpers/openWithBrowser'
 
 export function useFileCellMenu(file: DriveFile, account: Account) {
     const openFile = useOpenFile()
@@ -58,13 +59,18 @@ export function useFileCellMenu(file: DriveFile, account: Account) {
             key: 'rename',
             label: 'Đổi tên',
             icon: <Icon name="border_color" />,
-            onClick: () => renameFileModal.setIsOpen(true)
+            onClick: () => {
+                renameFileModal.setIsOpen(true)
+            }
         },
         {
             key: 'delete',
             label: 'Chuyển vào thùng rác',
             icon: <Icon name="delete" />,
-            danger: true
+            danger: true,
+            onClick: () => {
+                moveFileToTrash(file, account)
+            }
         },
         {
             type: 'divider'

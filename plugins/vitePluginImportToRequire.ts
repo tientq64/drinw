@@ -1,7 +1,7 @@
 import { Plugin } from 'vite'
 
 const importToRequireRegex: RegExp =
-    /(?<=^|\n)import(?:(?:\s+([\w$]+)\s*,)?(\s*\{[\w$,\s]+\}\s*)|(\s+[\w$]+\s+))from\s*((?<quote>['"])(?:fs-extra|googleapis|youtube-dl-exec|node-fetch|form-data|electron|child_process|os|https|path)\k<quote>)/g
+    /(?<=^|\n)import(?:\s+type\b)?(?:(?:\s+([\w$]+)\s*,)?(\s*\{[\w$,\s]+\}\s*)|(\s+[\w$]+\s+))from\s*((?<quote>['"])(?:fs-extra|googleapis|google-auth-library|youtube-dl-exec|node-fetch|form-data|electron|child_process|os|https|path)[\/\w\-]*\k<quote>)/g
 
 /**
  * Vite plugin convert tất cả các câu lệnh `import` thư viện nodejs sang `require`.

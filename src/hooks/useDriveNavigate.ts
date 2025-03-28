@@ -20,29 +20,25 @@ type DriveNavigateFunction = (partialState: Partial<DriveNavigateState>, replace
 
 export function useDriveNavigate(): DriveNavigateFunction {
     const navigate = useNavigate()
-    const location: StateLocation = useLocation()
 
     return (partialState, replace) => {
         const storeState = getState()
 
         const currentAccount: Account | undefined =
-            partialState.currentAccount ??
-            location.state?.currentAccount ??
-            storeState.currentAccount
+            partialState.currentAccount ?? storeState.currentAccount
 
-        const inTrash: boolean =
-            partialState.inTrash ?? location.state?.inTrash ?? storeState.inTrash
+        const inTrash: boolean = partialState.inTrash ?? storeState.inTrash
 
         let breadcrumbItems: DriveFile[] =
-            partialState.breadcrumbItems ??
-            location.state?.breadcrumbItems ??
-            storeState.breadcrumbItems
+            partialState.breadcrumbItems ?? storeState.breadcrumbItems
         breadcrumbItems = [...breadcrumbItems]
         if (breadcrumbItems.length === 0) {
             breadcrumbItems.push(rootDir)
         }
 
-        navigate(`/drive/${nanoid()}`, {
+        const hash: string = nanoid()
+
+        navigate(`/drive/${hash}`, {
             state: {
                 currentAccount,
                 inTrash,

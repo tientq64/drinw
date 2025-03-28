@@ -8,6 +8,7 @@ import { useCreateDirModal } from './useCreateDirModal'
 import { useDriveNavigate } from './useDriveNavigate'
 import { useOpenFile } from './useOpenFile'
 import { useUploadFromUrlModal } from './useUploadFromUrlModal'
+import { Fragment } from 'react/jsx-runtime'
 
 export function useDrivePageMenu(account: Account, dir: DriveFile) {
     const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
@@ -66,6 +67,11 @@ export function useDrivePageMenu(account: Account, dir: DriveFile) {
 
     return {
         items,
-        modals: [createDirModal.modal, uploadFromUrlModal.modal]
+        modals: (
+            <>
+                {createDirModal.modal}
+                {uploadFromUrlModal.modal}
+            </>
+        )
     }
 }

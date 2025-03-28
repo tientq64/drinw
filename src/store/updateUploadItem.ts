@@ -4,8 +4,9 @@ import { setState } from './useAppStore'
 
 export function updateUploadItem(uploadItem: UploadItem, updateData: Partial<UploadItem>): void {
     setState((draft) => {
-        const draftUploadItem = find(draft.uploadItems, { id: uploadItem.id })
-        if (draftUploadItem === undefined) return
-        Object.assign(draftUploadItem, updateData)
+        const draftItem = find(draft.uploadItems, { id: uploadItem.id })
+        if (draftItem === undefined) return
+
+        Object.assign(draftItem, updateData)
     })
 }

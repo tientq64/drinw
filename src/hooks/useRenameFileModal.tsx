@@ -1,9 +1,7 @@
-import { useRequest } from 'ahooks'
-import { Form, Input, InputRef, Modal } from 'antd'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { Form, Input, message, Modal } from 'antd'
+import { ReactElement, useEffect, useState } from 'react'
 import { updateFile } from '../api/updateFile'
 import { DriveFile } from '../helpers/getGoogleDrive'
-import { replaceCurrentFile } from '../store/replaceCurrentFile'
 import { Account } from '../store/types'
 import { stopPropagation } from '../utils/stopPropagation'
 
@@ -14,14 +12,11 @@ interface Values {
 export function useRenameFileModal(file: DriveFile, account: Account) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
-    const updateFileApi = useRequest(updateFile, { manual: true })
 
     const handleFormSubmit = ({ fileName }: Values): void => {
-        if (file.name === fileName) return
-        updateFileApi.run(account, file, {
-            name: fileName
-        })
         close()
+        if (file.name === fileName) return
+        updateFile(account, file, { name: fileName })
     }
 
     const close = (): void => {
@@ -36,12 +31,6 @@ export function useRenameFileModal(file: DriveFile, account: Account) {
             form.focusField('fileName')
         })
     }, [isOpen])
-
-    useEffect(() => {
-        const renamedFile: DriveFile | undefined = updateFileApi.data
-        if (renamedFile === undefined) return
-        replaceCurrentFile(file, renamedFile)
-    }, [updateFileApi.data])
 
     const modal: ReactElement = (
         <div onDoubleClick={stopPropagation} onContextMenu={stopPropagation}>
@@ -59,11 +48,21 @@ export function useRenameFileModal(file: DriveFile, account: Account) {
                         rules={[
                             {
                                 required: true,
-                                whitespace: true
+                                message: 'Tên không được để trống'
+                            },
+                            {
+                                whitespace: true,
+                                message: 'Tên không được chỉ có khoảng trắng'
+                            },
+                            {
+                                warningOnly: true,
+                                validator: (_, value, cb) => {
+                                    cb(value === file.name ? 'Tên mới giống với tên cũ' : undefined)
+                                }
                             }
                         ]}
                     >
-                        <Input spellCheck={false} />
+                        <Input />
                     </Form.Item>
                 </Form>
             </Modal>

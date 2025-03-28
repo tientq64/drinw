@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { DriveFile } from '../helpers/getGoogleDrive'
 import { useFileCellMenu } from '../hooks/useFileCellMenu'
+import { useTrashedFileCellMenu } from '../hooks/useTrashedFileCellMenu'
 import { Account } from '../store/types'
 import { ContextMenu } from './ContextMenu'
 
@@ -11,7 +12,10 @@ interface FileCellProps {
 }
 
 export function FileCell({ file, account, children }: FileCellProps): ReactNode {
-    const fileCellMenu = useFileCellMenu(file, account)
+    const driveFileCellMenu = useFileCellMenu(file, account)
+    const trashedFileCellMenu = useTrashedFileCellMenu(file, account)
+
+    const fileCellMenu = file.trashed ? trashedFileCellMenu : driveFileCellMenu
 
     return (
         <>

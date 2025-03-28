@@ -21,6 +21,7 @@ export type DriveFile = drive_v3.Schema$File & {
 
 export function getGoogleDrive(account: Account): Drive {
     const auth = getGoogleAuth(account)
+
     const drive = google.drive({
         version: 'v3',
         auth

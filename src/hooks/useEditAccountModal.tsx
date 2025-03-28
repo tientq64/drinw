@@ -1,11 +1,13 @@
 import { Form, Input, Select } from 'antd'
 import Modal from 'antd/es/modal'
+import { DefaultOptionType } from 'antd/es/select'
 import { ReactElement, useEffect, useState } from 'react'
 import { AccountKindEnum, accountKinds } from '../constants/accountKinds'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
-import { updateAccount } from '../store/updateAccount'
 import { Account } from '../store/types'
+import { updateAccount } from '../store/updateAccount'
 import { stopPropagation } from '../utils/stopPropagation'
+import { AccountKindLabel } from '../components/AccountKindLabel'
 
 interface Values {
     title?: string
@@ -15,6 +17,7 @@ interface Values {
 export function useEditAccountModal(account: Account) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
+    const kindName = Form.useWatch('kindName', form)
 
     const emailName: string = getAccountEmailName(account.email)
 
@@ -67,15 +70,16 @@ export function useEditAccountModal(account: Account) {
                             }
                         ]}
                     >
-                        <Input spellCheck={false} />
+                        <Input />
                     </Form.Item>
 
                     <Form.Item name="kindName" label="Thể loại">
                         <Select
-                            options={accountKinds.map((accountKind) => ({
+                            options={accountKinds.map<DefaultOptionType>((accountKind) => ({
+                                label: <AccountKindLabel kind={accountKind} />,
                                 value: accountKind.name
                             }))}
-                        ></Select>
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

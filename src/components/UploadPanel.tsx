@@ -13,14 +13,6 @@ export function UploadPanel(): ReactNode {
     const uploadItems = useAppStore((state) => state.uploadItems)
     const windowContentSize = useWindowContentSize()
 
-    const pendingItems = useMemo<UploadItem[]>(() => {
-        return filterPendingItems(uploadItems)
-    }, [uploadItems])
-
-    useUpdateEffect(() => {
-        tryStartUploadFromQueue()
-    }, [pendingItems.length])
-
     return (
         <div className="h-full overflow-hidden border-l border-zinc-700" style={{ width: 360 }}>
             <Table

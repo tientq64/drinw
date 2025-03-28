@@ -1,4 +1,4 @@
-import { Breadcrumb, Radio, RadioChangeEvent, Tooltip } from 'antd'
+import { Breadcrumb, Button, Radio, RadioChangeEvent, Space, Tooltip } from 'antd'
 import { MouseEvent, ReactNode } from 'react'
 import { viewModes } from '../constants/viewModes'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
@@ -20,7 +20,6 @@ export function HeaderBar(): ReactNode {
     const viewModeName = useAppStore((state) => state.viewModeName)
 
     const currentDir = useCurrentDir()
-
     const driveNavigate = useDriveNavigate()
 
     const handleBreadcrumbItemClick = (
@@ -45,6 +44,19 @@ export function HeaderBar(): ReactNode {
             className="flex items-center gap-3 border-b border-zinc-700 px-3 py-1"
             style={{ height: headerBarHeight }}
         >
+            <Space.Compact size="small">
+                <Button disabled={history.state.idx === 0} onClick={() => history.back()}>
+                    <Icon name="arrow_back" />
+                </Button>
+
+                <Button
+                    disabled={history.state.idx === history.length - 1}
+                    onClick={() => history.forward()}
+                >
+                    <Icon name="arrow_forward" />
+                </Button>
+            </Space.Compact>
+
             <div className="flex-1">
                 <Breadcrumb>
                     <Breadcrumb.Item className="flex items-center gap-1">
