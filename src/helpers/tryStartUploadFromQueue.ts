@@ -1,4 +1,4 @@
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 import { getState } from '../store/useAppStore'
 import { filterPendingItems } from './filterPendingItems'
 import { nextUploadItemStatus } from './nextUploadItemStatus'

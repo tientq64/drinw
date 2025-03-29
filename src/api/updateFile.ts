@@ -1,25 +1,20 @@
-import { driveFileFields } from '../constants/constants'
-import { Drive, DriveFile, getGoogleDrive } from '../helpers/getGoogleDrive'
+import { fileFields } from '../constants/constants'
+import { Drive, File, getGoogleDrive } from '../helpers/getGoogleDrive'
+import { makeFile } from '../helpers/makeFile'
 import { replaceCurrentFile } from '../store/replaceCurrentFile'
-import { Account } from '../store/types'
-import { getState } from '../store/useAppStore'
 
-export async function updateFile(
-    account: Account,
-    file: DriveFile,
-    updateData: Partial<DriveFile>
-): Promise<DriveFile> {
+export async function updateFile(file: File, updateData: Partial<File>): Promise<File> {
     if (file.id == null) return file
 
-    const drive: Drive = getGoogleDrive(account)
+    const drive: Drive = getGoogleDrive(file.account)
 
     const result = await drive.files.update({
         fileId: file.id,
-        fields: driveFileFields,
+        fields: fileFields,
         requestBody: updateData
     })
 
-    const updatedFile: DriveFile = result.data
+    const updatedFile: File = makeFile(result.data, file.account)
     replaceCurrentFile(updatedFile)
 
     return updatedFile

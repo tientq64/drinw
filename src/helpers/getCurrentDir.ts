@@ -1,6 +1,6 @@
 import { getState } from '../store/useAppStore'
-import { DriveFile } from './getGoogleDrive'
+import { File } from './getGoogleDrive'
 
-export function getCurrentDir(): DriveFile | undefined {
+export function getCurrentDir(): File | undefined {
     return getState().breadcrumbItems.at(-1)
 }

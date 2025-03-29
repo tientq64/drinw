@@ -1,31 +1,38 @@
-import { driveFileFields } from '../constants/constants'
-import { Drive, DriveFileList, getGoogleDrive } from '../helpers/getGoogleDrive'
+import { fileFields } from '../constants/constants'
+import { Drive, File, FileList, getGoogleDrive } from '../helpers/getGoogleDrive'
 import { makeDriveQuery } from '../helpers/makeDriveQuery'
-import { Account } from '../store/types'
-import { wait } from '../utils/wait'
+import { makeFile } from '../helpers/makeFile'
 
 export interface GetFilesOptions {
-    dirId: string
     trashed?: boolean
     pageToken?: string
 }
 
 export async function getFiles(
-    account: Account,
-    { dirId, trashed = false, pageToken }: GetFilesOptions
-): Promise<DriveFileList> {
-    const drive: Drive = getGoogleDrive(account)
+    dir: File,
+    { trashed = false, pageToken }: GetFilesOptions
+): Promise<FileList> {
+    const drive: Drive = getGoogleDrive(dir.account)
 
     const q: string = makeDriveQuery(
-        trashed ? 'trashed=true' : `'${dirId}' in parents and trashed=false`
+        trashed ? 'trashed=true' : `'${dir.id}' in parents and trashed=false`
     )
     const result = await drive.files.list({
         q,
-        fields: `files(${driveFileFields}),nextPageToken`,
+        fields: `files(${fileFields}),nextPageToken`,
         orderBy: 'folder,createdTime desc',
         pageSize: 100,
         pageToken
     })
 
-    return result.data
+    let files: File[] | undefined = undefined
+    if (result.data.files !== undefined) {
+        files = result.data.files.map((file) => makeFile(file, dir.account))
+    }
+
+    return {
+        files,
+        nextPageToken: result.data.nextPageToken ?? undefined,
+        incompleteSearch: result.data.incompleteSearch ?? undefined
+    }
 }

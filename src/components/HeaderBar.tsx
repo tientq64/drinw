@@ -2,7 +2,7 @@ import { Breadcrumb, Button, Radio, RadioChangeEvent, Space, Tooltip } from 'ant
 import { MouseEvent, ReactNode } from 'react'
 import { viewModes } from '../constants/viewModes'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 import { useCurrentDir } from '../hooks/useCurrentDir'
 import { useDriveNavigate } from '../hooks/useDriveNavigate'
 import { setViewModeName } from '../store/setViewModeName'
@@ -10,6 +10,7 @@ import { useAppStore } from '../store/useAppStore'
 import { AccountStorageBar } from './AccountStorageBar'
 import { DefaultSmartUploadSwitch } from './DefaultSmartUploadSwitch'
 import { Icon } from './Icon'
+import { rootDirId } from '../constants/constants'
 
 export const headerBarHeight: number = 33
 
@@ -23,7 +24,7 @@ export function HeaderBar(): ReactNode {
     const driveNavigate = useDriveNavigate()
 
     const handleBreadcrumbItemClick = (
-        breadcrumbItem: DriveFile,
+        breadcrumbItem: File,
         index: number,
         event: MouseEvent
     ): void => {
@@ -81,7 +82,7 @@ export function HeaderBar(): ReactNode {
                                 handleBreadcrumbItemClick(breadcrumbItem, index, event)
                             }}
                         >
-                            {breadcrumbItem.id === 'root' && (
+                            {breadcrumbItem.id === rootDirId && (
                                 <>
                                     {!inTrash && (
                                         <>
@@ -97,7 +98,7 @@ export function HeaderBar(): ReactNode {
                                     )}
                                 </>
                             )}
-                            {breadcrumbItem.id !== 'root' && breadcrumbItem.name}
+                            {breadcrumbItem.id !== rootDirId && breadcrumbItem.name}
                         </Breadcrumb.Item>
                     ))}
                 </Breadcrumb>

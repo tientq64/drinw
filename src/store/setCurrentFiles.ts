@@ -1,8 +1,8 @@
 import { formatFileList } from '../helpers/formatFileList'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 import { setState } from './useAppStore'
 
-export function setCurrentFiles(currentFiles: DriveFile[]): void {
+export function setCurrentFiles(currentFiles: File[]): void {
     setState({
         currentFiles: formatFileList(currentFiles)
     })

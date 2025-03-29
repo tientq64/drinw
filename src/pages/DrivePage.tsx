@@ -1,24 +1,20 @@
-import { useRequest, useSize } from 'ahooks'
+import { useRequest } from 'ahooks'
 import { Table } from 'antd'
-import { parse } from 'path'
-import { ReactNode, useEffect, useRef, useState } from 'react'
-import { Grid, ScrollParams } from 'react-virtualized'
-import youtubeDl from 'youtube-dl-exec'
+import { ReactNode, useEffect, useState } from 'react'
+import { AutoSizer, Grid, ScrollParams } from 'react-virtualized'
 import { getFiles } from '../api/getFiles'
-import { updateFile } from '../api/updateFile'
 import { ContextMenu } from '../components/ContextMenu'
 import { FileCell } from '../components/FileCell'
 import { FileTile } from '../components/FileTile'
-import { headerBarHeight } from '../components/HeaderBar'
-import { folderMime } from '../constants/constants'
+import { folderMime, rootDirId } from '../constants/constants'
 import { ViewModeEnum } from '../constants/viewModes'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 import { useCurrentDir } from '../hooks/useCurrentDir'
 import { useDriveNavigateToMainDir } from '../hooks/useDriveNavigateToMainDir'
 import { useDrivePageMenu } from '../hooks/useDrivePageMenu'
 import { useOpenFile } from '../hooks/useOpenFile'
+import { useUpdateUsage } from '../hooks/useUpdateUsage'
 import { useWindowContentSize } from '../hooks/useWindowContentSize'
-import { replaceCurrentFile } from '../store/replaceCurrentFile'
 import { setCurrentFiles } from '../store/setCurrentFiles'
 import { useAppStore } from '../store/useAppStore'
 import { formatSize } from '../utils/formatSize'
@@ -34,18 +30,17 @@ export function DrivePage(): ReactNode {
 
     const currentFiles = useAppStore((state) => state.currentFiles)
     const viewModeName = useAppStore((state) => state.viewModeName)
+    const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
 
     const getFilesApi = useRequest(getFiles, { manual: true })
     const windowContentSize = useWindowContentSize()
-    const mainRef = useRef<HTMLDivElement | null>(null)
-    const size = useSize(mainRef)
     const openFile = useOpenFile()
-    const drivePageMenu = useDrivePageMenu(currentAccount, currentDir)
+    const drivePageMenu = useDrivePageMenu(currentDir)
     const [columnCount] = useState<number>(6)
 
     const firstLoading: boolean = getFilesApi.loading && getFilesApi.data === undefined
 
-    const handleFileDoubleClick = (file: DriveFile): void => {
+    const handleFileDoubleClick = (file: File): void => {
         openFile(file)
     }
 
@@ -56,10 +51,9 @@ export function DrivePage(): ReactNode {
         if (getFilesApi.data.nextPageToken == null) return
 
         if (el.scrollHeight - el.clientHeight - el.scrollTop <= 1200) {
-            getFilesApi.run(currentAccount, {
-                dirId: currentDir.id,
+            getFilesApi.run(currentDir, {
                 trashed: inTrash,
-                pageToken: getFilesApi.data?.nextPageToken ?? undefined
+                pageToken: getFilesApi.data?.nextPageToken
             })
         }
     }
@@ -73,8 +67,7 @@ export function DrivePage(): ReactNode {
     useEffect(() => {
         if (currentDir.id == null) return
         setCurrentFiles([])
-        getFilesApi.run(currentAccount, {
-            dirId: currentDir.id,
+        getFilesApi.run(currentDir, {
             trashed: inTrash
         })
         return () => {
@@ -179,113 +172,130 @@ export function DrivePage(): ReactNode {
     //     }
     // }, [currentFiles])
 
-    // useDriveNavigateToMainDir()
-    // if (currentDir.id === 'root' && !inTrash) return
+    useUpdateUsage(currentAccount)
+
+    useDriveNavigateToMainDir(currentAccount, inTrash, breadcrumbItems, currentDir)
+    if (currentDir.id === rootDirId && !inTrash) return
 
     return (
         <>
             <ContextMenu className="h-full overflow-hidden" items={drivePageMenu.items}>
-                <div ref={mainRef} className="relative h-full">
-                    {firstLoading && (
-                        <div className="flex items-center justify-center py-8 text-zinc-400">
+                <div className="relative h-full">
+                    <AutoSizer>
+                        {(size) => (
+                            <>
+                                {viewModeName === ViewModeEnum.List && (
+                                    <Table
+                                        className="[&_.ant-table-header]:!rounded-none"
+                                        style={{
+                                            minWidth: size.width
+                                        }}
+                                        size="small"
+                                        sticky
+                                        virtual
+                                        pagination={false}
+                                        rowKey="id"
+                                        rowClassName="[&:has(.context-menu-open)>div]:!bg-zinc-800 h-[33px] leading-4 cursor-default"
+                                        onHeaderRow={() => ({
+                                            className: '[&>th]:!rounded-none whitespace-nowrap'
+                                        })}
+                                        onRow={(file) => ({
+                                            onDoubleClick: () => handleFileDoubleClick(file)
+                                        })}
+                                        scroll={{
+                                            y: size.height - 39
+                                        }}
+                                        onScroll={(event) =>
+                                            handleScrollerScroll(event.currentTarget)
+                                        }
+                                        columns={[
+                                            {
+                                                title: '#',
+                                                width: size.width * 0.06,
+                                                render: (_, __, index) => index + 1
+                                            },
+                                            {
+                                                title: 'Tên',
+                                                width: size.width * 0.5,
+                                                className: '!py-0',
+                                                render: (_, file) => (
+                                                    <FileCell file={file}>{file.name}</FileCell>
+                                                )
+                                            },
+                                            {
+                                                title: 'Loại',
+                                                dataIndex: 'mimeType',
+                                                className: '!py-0',
+                                                render: (value) => (
+                                                    <div className="flex h-full items-center">
+                                                        <div className="line-clamp-2">
+                                                            {value === folderMime ? '' : value}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            },
+                                            {
+                                                title: 'Dung lượng',
+                                                dataIndex: 'size',
+                                                render: (value) =>
+                                                    value == null ? '' : formatSize(value)
+                                            },
+                                            {
+                                                title: 'Properties',
+                                                dataIndex: 'trashed',
+                                                render: (value) => value?.id || value?.userId
+                                            }
+                                        ]}
+                                        dataSource={currentFiles}
+                                        locale={{
+                                            emptyText: (
+                                                <>
+                                                    {firstLoading && 'Đang tải...'}
+                                                    {!firstLoading && 'Thư mục trống'}
+                                                </>
+                                            )
+                                        }}
+                                    />
+                                )}
+
+                                {viewModeName === ViewModeEnum.Grid && (
+                                    <Grid
+                                        className="p-2"
+                                        width={size ? size.width : 1200}
+                                        height={windowContentSize.height - 32}
+                                        columnCount={columnCount}
+                                        columnWidth={
+                                            size ? (size.width - 18 - 16) / columnCount : 200
+                                        }
+                                        rowCount={Math.ceil(currentFiles.length / columnCount)}
+                                        rowHeight={180}
+                                        onScroll={handleScrollerScroll}
+                                        cellRenderer={({ rowIndex, columnIndex, style }) => {
+                                            const file: File | undefined =
+                                                currentFiles[rowIndex * columnCount + columnIndex]
+                                            return (
+                                                file && (
+                                                    <FileTile
+                                                        key={file.id}
+                                                        file={file}
+                                                        style={style}
+                                                        onDoubleClick={() =>
+                                                            handleFileDoubleClick(file)
+                                                        }
+                                                    />
+                                                )
+                                            )
+                                        }}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </AutoSizer>
+
+                    {!firstLoading && getFilesApi.loading && (
+                        <div className="absolute bottom-0 flex w-full justify-center bg-zinc-800/90 p-1">
                             Đang tải...
                         </div>
-                    )}
-
-                    {!firstLoading && (
-                        <>
-                            {viewModeName === ViewModeEnum.List && (
-                                <Table
-                                    className="[&_.ant-table-header]:!rounded-none"
-                                    size="small"
-                                    sticky
-                                    virtual
-                                    pagination={false}
-                                    rowKey="id"
-                                    rowClassName="[&:has(.context-menu-open)>div]:!bg-zinc-800 h-[33px] leading-4 cursor-default"
-                                    onHeaderRow={() => ({
-                                        className: '[&>th]:!rounded-none whitespace-nowrap'
-                                    })}
-                                    onRow={(file) => ({
-                                        onDoubleClick: () => handleFileDoubleClick(file)
-                                    })}
-                                    scroll={{
-                                        y: windowContentSize.height - headerBarHeight - 39
-                                    }}
-                                    onScroll={(event) => handleScrollerScroll(event.currentTarget)}
-                                    columns={[
-                                        {
-                                            title: '#',
-                                            width: size && size.width * 0.06,
-                                            render: (_, __, index) => index + 1
-                                        },
-                                        {
-                                            title: 'Tên',
-                                            width: size && size.width * 0.5,
-                                            className: '!py-0',
-                                            render: (_, file) => (
-                                                <FileCell file={file} account={currentAccount}>
-                                                    {file.name}
-                                                </FileCell>
-                                            )
-                                        },
-                                        {
-                                            title: 'Loại',
-                                            dataIndex: 'mimeType',
-                                            render: (value) => (value === folderMime ? '' : value)
-                                        },
-                                        {
-                                            title: 'Dung lượng',
-                                            dataIndex: 'size',
-                                            render: (value) =>
-                                                value == null ? '' : formatSize(value)
-                                        },
-                                        {
-                                            title: 'Properties',
-                                            dataIndex: 'properties',
-                                            render: (value) => value?.id || value?.userId
-                                        }
-                                    ]}
-                                    dataSource={currentFiles}
-                                />
-                            )}
-
-                            {viewModeName === ViewModeEnum.Grid && (
-                                <Grid
-                                    className="p-2"
-                                    width={size ? size.width : 1200}
-                                    height={windowContentSize.height - 32}
-                                    columnCount={columnCount}
-                                    columnWidth={size ? (size.width - 18 - 16) / columnCount : 200}
-                                    rowCount={Math.ceil(currentFiles.length / columnCount)}
-                                    rowHeight={180}
-                                    onScroll={handleScrollerScroll}
-                                    cellRenderer={({ rowIndex, columnIndex, style }) => {
-                                        const file: DriveFile | undefined =
-                                            currentFiles[rowIndex * columnCount + columnIndex]
-                                        return (
-                                            file && (
-                                                <FileTile
-                                                    key={file.id}
-                                                    file={file}
-                                                    account={currentAccount}
-                                                    style={style}
-                                                    onDoubleClick={() =>
-                                                        handleFileDoubleClick(file)
-                                                    }
-                                                />
-                                            )
-                                        )
-                                    }}
-                                />
-                            )}
-
-                            {getFilesApi.loading && (
-                                <div className="absolute bottom-0 flex w-full justify-center bg-zinc-800/90 p-1">
-                                    Đang tải...
-                                </div>
-                            )}
-                        </>
                     )}
                 </div>
             </ContextMenu>

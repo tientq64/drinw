@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, IpcMainEvent } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, IpcMainEvent, OpenDialogSyncOptions } from 'electron'
 
 async function appReady(): Promise<void> {
     const win: BrowserWindow = new BrowserWindow({
@@ -31,16 +31,16 @@ async function appReady(): Promise<void> {
         event.returnValue = win.isMaximized()
     })
 
-    ipcMain.on('chooseLocalFileToUpload', (event: IpcMainEvent) => {
-        let paths = dialog.showOpenDialogSync(win, {
-            title: 'Tải lên các tệp hoặc thư mục',
-            properties: ['openFile', 'multiSelections']
-        })
-        if (paths !== undefined) {
-            paths = paths.map((path) => path.replace(/\\/g, '/'))
+    ipcMain.on(
+        'showFilePicker',
+        (event: IpcMainEvent, title: string, properties: OpenDialogSyncOptions['properties']) => {
+            let paths = dialog.showOpenDialogSync(win, { title, properties })
+            if (paths !== undefined) {
+                paths = paths.map((path) => path.replace(/\\/g, '/'))
+            }
+            event.returnValue = paths
         }
-        event.returnValue = paths
-    })
+    )
 
     ipcMain.on('setBadgeCount', (event: IpcMainEvent, count: number) => {
         const succeeded: boolean = app.setBadgeCount(count)

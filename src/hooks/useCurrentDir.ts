@@ -1,6 +1,6 @@
 import { getCurrentDir } from '../helpers/getCurrentDir'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 
-export function useCurrentDir(): DriveFile | undefined {
+export function useCurrentDir(): File | undefined {
     return getCurrentDir()
 }

@@ -1,5 +1,5 @@
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 
 export function filterProcessingItems(uploadItems: UploadItem[]): UploadItem[] {
     return uploadItems.filter((uploadItem) => {

@@ -1,7 +1,7 @@
 import { UploadStatusEnum } from '../constants/uploadStatuses'
 import { addCurrentFile } from '../store/addCurrentFile'
-import { UploadItem } from '../store/types'
-import { DriveFile } from './getGoogleDrive'
+import { UploadItem } from './makeUploadItem'
+import { File } from './getGoogleDrive'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
 
 export function handleUploadItemSuccess(uploadItem: UploadItem): void {
@@ -12,7 +12,7 @@ export function handleUploadItemSuccess(uploadItem: UploadItem): void {
         progress: uploadItem.totalProgress
     })
 
-    const uploadedFile: DriveFile | undefined = uploadItem.uploadedFile
+    const uploadedFile: File | undefined = uploadItem.uploadedFile
     if (uploadedFile === undefined) return
 
     addCurrentFile(uploadedFile)

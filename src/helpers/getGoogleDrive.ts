@@ -3,9 +3,10 @@ import { Account } from '../store/types'
 import { getGoogleAuth } from './getGoogleAuth'
 
 export type Drive = drive_v3.Drive
+export type DriveFile = drive_v3.Schema$File
 export type DriveFileList = drive_v3.Schema$FileList
 
-export interface DriveFileProperties {
+export interface FileProperties {
     id?: string
     userId?: string
     userName?: string
@@ -15,8 +16,15 @@ export interface DriveFileProperties {
     pageUrl?: string
 }
 
-export type DriveFile = drive_v3.Schema$File & {
-    properties?: DriveFileProperties | null
+export type File = DriveFile & {
+    properties?: FileProperties | null
+    account: Account
+}
+
+export type FileList = {
+    files?: File[]
+    nextPageToken?: string
+    incompleteSearch?: boolean
 }
 
 export function getGoogleDrive(account: Account): Drive {

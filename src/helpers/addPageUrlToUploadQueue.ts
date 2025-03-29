@@ -1,32 +1,20 @@
-import { nanoid } from 'nanoid'
-import { UploadStatusEnum } from '../constants/uploadStatuses'
 import { addUploadItem } from '../store/addUploadItem'
-import { Account, UploadItem } from '../store/types'
-import { estimateFileSize } from './estimateFileSize'
-import { DriveFile } from './getGoogleDrive'
+import { File } from './getGoogleDrive'
+import { makeUploadItem, UploadItem } from './makeUploadItem'
 
 interface Options {
     pageUrl: string
     isSmartUpload: boolean
-    account?: Account
-    destDir?: DriveFile
+    destDir?: File
 }
 
-export function addPageUrlToUploadQueue({
-    pageUrl,
-    isSmartUpload,
-    account,
-    destDir
-}: Options): void {
-    const uploadItem: UploadItem = {
-        id: nanoid(),
-        statusName: UploadStatusEnum.Idle,
+export function addPageUrlToUploadQueue({ pageUrl, isSmartUpload, destDir }: Options): UploadItem {
+    const uploadItem: UploadItem = makeUploadItem({
         isSmartUpload,
-        progress: 0,
-        estimatedSize: estimateFileSize(pageUrl),
         pageUrl,
-        account,
         destDir
-    }
+    })
     addUploadItem(uploadItem)
+
+    return uploadItem
 }

@@ -1,7 +1,7 @@
 import { Spin } from 'antd'
 import { ReactNode } from 'react'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from '../store/types'
+import { UploadItem } from '../helpers/makeUploadItem'
 import { Icon } from './Icon'
 
 interface UploadItemStatusProps {

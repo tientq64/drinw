@@ -1,36 +1,33 @@
-import { driveFileFields, folderMime } from '../constants/constants'
-import { getDirId } from '../helpers/getDirId'
-import { Drive, DriveFile, DriveFileProperties, getGoogleDrive } from '../helpers/getGoogleDrive'
+import { fileFields, folderMime } from '../constants/constants'
+import { Drive, File, FileProperties, getGoogleDrive } from '../helpers/getGoogleDrive'
+import { makeFile } from '../helpers/makeFile'
 import { makeFileDescription } from '../helpers/makeFileDescription'
 import { makeFileProperties, PropertiesData } from '../helpers/makeFileProperties'
 import { addCurrentFile } from '../store/addCurrentFile'
-import { Account } from '../store/types'
 
 export interface CreateDirOptions {
     propertiesData?: PropertiesData
 }
 
 export async function createDir(
-    account: Account,
-    destDirOrId: DriveFile | DriveFile['id'],
+    destDir: File,
     name: string,
     { propertiesData }: CreateDirOptions = {}
-): Promise<DriveFile> {
-    const destDirId: string | undefined = getDirId(destDirOrId)
-    if (destDirId === undefined) {
+): Promise<File> {
+    if (destDir.id == null) {
         throw Error('Id thư mục không tồn tại')
     }
 
     const description: string | undefined = makeFileDescription(propertiesData)
-    const properties: Partial<DriveFileProperties> | undefined = makeFileProperties(propertiesData)
+    const properties: Partial<FileProperties> | undefined = makeFileProperties(propertiesData)
 
-    const drive: Drive = getGoogleDrive(account)
+    const drive: Drive = getGoogleDrive(destDir.account)
 
     const result = await drive.files.create({
-        fields: driveFileFields,
+        fields: fileFields,
         requestBody: {
             name,
-            parents: [destDirId],
+            parents: [destDir.id],
             mimeType: folderMime,
             description,
             properties
@@ -40,7 +37,7 @@ export async function createDir(
         throw Error('Tạo thư mục thất bại')
     }
 
-    const newDir: DriveFile = result.data
+    const newDir: File = makeFile(result.data, destDir.account)
     addCurrentFile(newDir)
 
     return newDir

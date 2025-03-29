@@ -1,10 +1,10 @@
 import { uniqBy } from 'lodash-es'
 import { checkFileBelongToCurrentDir } from './checkFileBelongToCurrentDir'
 import { checkFileIsDir } from './checkFileIsDir'
-import { DriveFile } from './getGoogleDrive'
+import { File } from './getGoogleDrive'
 
-export function formatFileList(files: DriveFile[]): DriveFile[] {
-    let formatedFiles: DriveFile[] = files.filter((file) => {
+export function formatFileList(files: File[]): File[] {
+    let formatedFiles: File[] = files.filter((file) => {
         return checkFileBelongToCurrentDir(file)
     })
 

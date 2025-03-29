@@ -10,10 +10,12 @@ import { setMaxUploadQueueSize } from '../store/setMaxUploadQueueSize'
 import { setMotion } from '../store/setMotion'
 import { setViewModeName } from '../store/setViewModeName'
 import { useAppStore } from '../store/useAppStore'
+import { setUploadChunkSize } from '../store/setUploadChunkSize'
 
 interface SettingValues {
     masterEmail: string
     maxUploadQueueSize: number
+    uploadChunkSize: number
 }
 
 export function SettingsPage(): ReactNode {
@@ -21,6 +23,7 @@ export function SettingsPage(): ReactNode {
     const viewModeName = useAppStore((state) => state.viewModeName)
     const isDefaultSmartUpload = useAppStore((state) => state.isDefaultSmartUpload)
     const maxUploadQueueSize = useAppStore((state) => state.maxUploadQueueSize)
+    const uploadChunkSize = useAppStore((state) => state.uploadChunkSize)
     const motion = useAppStore((state) => state.motion)
 
     const [form] = Form.useForm()
@@ -28,12 +31,14 @@ export function SettingsPage(): ReactNode {
 
     const initialValues: SettingValues = {
         masterEmail: masterEmail ?? '',
-        maxUploadQueueSize
+        maxUploadQueueSize,
+        uploadChunkSize
     }
 
     const handleSettingsSubmit = (values: SettingValues): void => {
-        setMasterEmail(values.masterEmail || undefined)
+        setMasterEmail(values.masterEmail)
         setMaxUploadQueueSize(values.maxUploadQueueSize)
+        setUploadChunkSize(values.uploadChunkSize)
         message.success('Đã lưu cài đặt')
     }
 
@@ -84,7 +89,7 @@ export function SettingsPage(): ReactNode {
                 </Form.Item>
 
                 <Form.Item
-                    label="Dung lượng tải lên đồng thời tối đa"
+                    label="Tổng dung lượng tối đa của các tệp đang tải lên"
                     name="maxUploadQueueSize"
                     rules={[
                         {
@@ -96,6 +101,27 @@ export function SettingsPage(): ReactNode {
                         className="w-32"
                         min={1 * MB}
                         max={1024 * MB}
+                        step={1 * MB}
+                        formatter={(value) => String(Math.round(Number(value) / MB))}
+                        parser={(displayValue) => Math.round(Number(displayValue) * MB)}
+                        changeOnWheel
+                        suffix="MB"
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    label="Kích thước mỗi đoạn dữ liệu tải lên"
+                    name="uploadChunkSize"
+                    rules={[
+                        {
+                            required: true
+                        }
+                    ]}
+                >
+                    <InputNumber
+                        className="w-32"
+                        min={1 * MB}
+                        max={100 * MB}
                         step={1 * MB}
                         formatter={(value) => String(Math.round(Number(value) / MB))}
                         parser={(displayValue) => Math.round(Number(displayValue) * MB)}

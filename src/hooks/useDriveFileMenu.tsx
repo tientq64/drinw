@@ -2,15 +2,14 @@ import { ItemType } from 'antd/es/menu/interface'
 import { moveFileToTrash } from '../api/moveFileToTrash'
 import { Icon } from '../components/Icon'
 import { folderMime } from '../constants/constants'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 import { openWithBrowser } from '../helpers/openWithBrowser'
-import { Account } from '../store/types'
 import { useOpenFile } from './useOpenFile'
 import { useRenameFileModal } from './useRenameFileModal'
 
-export function useFileCellMenu(file: DriveFile, account: Account) {
+export function useDriveFileMenu(file: File) {
     const openFile = useOpenFile()
-    const renameFileModal = useRenameFileModal(file, account)
+    const renameFileModal = useRenameFileModal(file)
 
     const isDir: boolean = file.mimeType === folderMime
 
@@ -69,7 +68,7 @@ export function useFileCellMenu(file: DriveFile, account: Account) {
             icon: <Icon name="delete" />,
             danger: true,
             onClick: () => {
-                moveFileToTrash(file, account)
+                moveFileToTrash(file)
             }
         },
         {

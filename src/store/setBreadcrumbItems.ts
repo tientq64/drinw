@@ -1,6 +1,6 @@
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 import { setState } from './useAppStore'
 
-export function setBreadcrumbItems(breadcrumbItems: DriveFile[]): void {
+export function setBreadcrumbItems(breadcrumbItems: File[]): void {
     setState({ breadcrumbItems })
 }

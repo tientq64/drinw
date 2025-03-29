@@ -14,7 +14,7 @@ export function AccountCell({ account, children }: AccountCellProps): ReactNode 
     return (
         <>
             <ContextMenu
-                className="flex h-8 items-center"
+                className="-mx-2 flex h-8 items-center px-2"
                 openClassName="context-menu-open"
                 items={accountCellMenu.items}
             >

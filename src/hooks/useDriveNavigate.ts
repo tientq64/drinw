@@ -1,39 +1,34 @@
 import { nanoid } from 'nanoid'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { getState } from '../store/useAppStore'
+import { useNavigate } from 'react-router-dom'
+import { File } from '../helpers/getGoogleDrive'
+import { makeRootDir } from '../helpers/makeRootDir'
 import { Account } from '../store/types'
-import { StateLocation } from '../types/types'
+import { getState } from '../store/useAppStore'
 
 export interface DriveNavigateState {
     currentAccount: Account | undefined
     inTrash: boolean
-    breadcrumbItems: DriveFile[]
+    breadcrumbItems: File[]
 }
 
-export const rootDir: DriveFile = {
-    id: 'root',
-    name: 'Root'
-}
-
-type DriveNavigateFunction = (partialState: Partial<DriveNavigateState>, replace?: boolean) => void
+type DriveNavigateFunction = (navState?: Partial<DriveNavigateState>, replace?: boolean) => void
 
 export function useDriveNavigate(): DriveNavigateFunction {
     const navigate = useNavigate()
 
-    return (partialState, replace) => {
+    return (navState, replace) => {
         const storeState = getState()
 
         const currentAccount: Account | undefined =
-            partialState.currentAccount ?? storeState.currentAccount
+            navState?.currentAccount ?? storeState.currentAccount
+        if (currentAccount === undefined) return
 
-        const inTrash: boolean = partialState.inTrash ?? storeState.inTrash
+        const inTrash: boolean = navState?.inTrash ?? storeState.inTrash
 
-        let breadcrumbItems: DriveFile[] =
-            partialState.breadcrumbItems ?? storeState.breadcrumbItems
+        let breadcrumbItems: File[] = navState?.breadcrumbItems ?? storeState.breadcrumbItems
         breadcrumbItems = [...breadcrumbItems]
         if (breadcrumbItems.length === 0) {
-            breadcrumbItems.push(rootDir)
+            breadcrumbItems.push(makeRootDir(currentAccount))
         }
 
         const hash: string = nanoid()

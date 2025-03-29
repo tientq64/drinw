@@ -1,8 +1,8 @@
 import { Checkbox, Form, Input, Modal } from 'antd'
 import { ReactElement, useEffect, useState } from 'react'
 import { addPageUrlToUploadQueue } from '../helpers/addPageUrlToUploadQueue'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { Account } from '../store/types'
+import { File } from '../helpers/getGoogleDrive'
+import { tryStartUploadFromQueue } from '../helpers/tryStartUploadFromQueue'
 import { useAppStore } from '../store/useAppStore'
 import { stopPropagation } from '../utils/stopPropagation'
 
@@ -11,15 +11,16 @@ interface Values {
     isSmartUpload: boolean
 }
 
-export function useUploadFromUrlModal(account: Account, destDir: DriveFile) {
+export function useUploadFromUrlModal(destDir: File) {
     const isDefaultSmartUpload = useAppStore((state) => state.isDefaultSmartUpload)
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
 
     const handleFormSubmit = ({ pageUrl, isSmartUpload }: Values): void => {
-        addPageUrlToUploadQueue({ pageUrl, isSmartUpload, account, destDir })
         close()
+        addPageUrlToUploadQueue({ pageUrl, isSmartUpload, destDir })
+        tryStartUploadFromQueue()
     }
 
     const close = (): void => {

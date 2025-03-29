@@ -1,5 +1,5 @@
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
 import { tryStartUploadFromQueue } from './tryStartUploadFromQueue'
 

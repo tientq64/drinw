@@ -1,10 +1,10 @@
 import { folderMime } from '../constants/constants'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 import { openWithBrowser } from '../helpers/openWithBrowser'
 import { useAppStore } from '../store/useAppStore'
 import { useDriveNavigate } from './useDriveNavigate'
 
-type OpenFileFunction = (file: DriveFile, isOpenWithBrowser?: boolean) => void
+type OpenFileFunction = (file: File, isOpenWithBrowser?: boolean) => void
 
 export function useOpenFile(): OpenFileFunction {
     const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)

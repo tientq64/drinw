@@ -1,22 +1,20 @@
-import { useRequest } from 'ahooks'
 import { Form, Input, Modal } from 'antd'
 import { ReactElement, useEffect, useState } from 'react'
 import { createDir } from '../api/createDir'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { Account } from '../store/types'
+import { File } from '../helpers/getGoogleDrive'
 import { stopPropagation } from '../utils/stopPropagation'
 
 interface Values {
     dirName: string
 }
 
-export function useCreateDirModal(parentDir: DriveFile, account: Account) {
+export function useCreateDirModal(parentDir: File) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
 
     const handleFormSubmit = ({ dirName }: Values): void => {
         close()
-        createDir(account, parentDir, dirName)
+        createDir(parentDir, dirName)
     }
 
     const close = (): void => {

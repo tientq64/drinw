@@ -1,6 +1,4 @@
 import { AccountKindEnum } from '../constants/accountKinds'
-import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { DriveFile } from '../helpers/getGoogleDrive'
 
 export interface Account {
     email: string
@@ -11,28 +9,4 @@ export interface Account {
     driveSize: number
     trashSize: number
     privateKey: string
-}
-
-export interface UploadItem {
-    id: string
-    statusName: UploadStatusEnum
-    isSmartUpload: boolean
-    progress: number
-    totalProgress?: number
-    estimatedSize?: number
-    pageUrl?: string
-    localFilePath?: string
-    account?: Account
-    destDir?: DriveFile
-    fileName?: string
-    fileSize?: number
-    fileId?: string
-    userId?: string
-    userName?: string
-    userUrl?: string
-    channelId?: string
-    channelUrl?: string
-    tempDownloadFilePath?: string
-    uploadedFile?: DriveFile
-    message?: string
 }

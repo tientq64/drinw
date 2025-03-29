@@ -1,4 +1,3 @@
-import { Splitter } from 'antd'
 import { ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import { HeaderBar } from './HeaderBar'

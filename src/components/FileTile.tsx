@@ -1,24 +1,21 @@
 import { Card, Descriptions, Popover } from 'antd'
+import { DescriptionsItemType } from 'antd/es/descriptions'
 import { CSSProperties, MouseEventHandler, ReactNode, useMemo } from 'react'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { useFileCellMenu } from '../hooks/useFileCellMenu'
-import { Account } from '../store/types'
+import { folderMime } from '../constants/constants'
+import { File } from '../helpers/getGoogleDrive'
+import { useFileMenu } from '../hooks/useFileMenu'
+import { formatSize } from '../utils/formatSize'
 import { ContextMenu } from './ContextMenu'
 import { FileTileThumbnail } from './FileTileThumbnail'
-import { formatSize } from '../utils/formatSize'
-import { folderMime } from '../constants/constants'
-import { ItemType } from 'antd/es/menu/interface'
-import { DescriptionsItemType } from 'antd/es/descriptions'
 
 interface FileTileProps {
-    file: DriveFile
-    account: Account
+    file: File
     style: CSSProperties
     onDoubleClick: MouseEventHandler
 }
 
-export function FileTile({ file, account, style, onDoubleClick }: FileTileProps): ReactNode {
-    const fileCellMenu = useFileCellMenu(file, account)
+export function FileTile({ file, style, onDoubleClick }: FileTileProps): ReactNode {
+    const fileMenu = useFileMenu(file)
 
     const detailsItems = useMemo<(DescriptionsItemType | boolean)[]>(() => {
         return [
@@ -51,7 +48,7 @@ export function FileTile({ file, account, style, onDoubleClick }: FileTileProps)
         <div className="p-1.5" style={style}>
             <ContextMenu
                 openClassName="border-zinc-600 bg-zinc-800 pointer-events-none"
-                items={fileCellMenu.items}
+                items={fileMenu.items}
             >
                 <Popover
                     rootClassName="max-w-96 pointer-events-none"
@@ -85,7 +82,7 @@ export function FileTile({ file, account, style, onDoubleClick }: FileTileProps)
                 </Popover>
             </ContextMenu>
 
-            {fileCellMenu.modals}
+            {fileMenu.modals}
         </div>
     )
 }

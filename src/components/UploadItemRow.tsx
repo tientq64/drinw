@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { getUploadStatus, UploadStatusEnum } from '../constants/uploadStatuses'
 import { useUploadItemMenu } from '../hooks/useUploadItemMenu'
-import { UploadItem } from '../store/types'
+import { UploadItem } from '../helpers/makeUploadItem'
 import { formatSize } from '../utils/formatSize'
 import { ContextMenu } from './ContextMenu'
 import { UploadItemStatus } from './UploadItemStatus'

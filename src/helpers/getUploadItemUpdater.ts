@@ -1,5 +1,5 @@
 import { setUploadItemFailed } from '../store/setUploadItemFailed'
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 import { updateUploadItem } from '../store/updateUploadItem'
 import { nextUploadItemStatus } from './nextUploadItemStatus'
 

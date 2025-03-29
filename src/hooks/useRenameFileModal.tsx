@@ -1,22 +1,21 @@
-import { Form, Input, message, Modal } from 'antd'
+import { Form, Input, Modal } from 'antd'
 import { ReactElement, useEffect, useState } from 'react'
 import { updateFile } from '../api/updateFile'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { Account } from '../store/types'
+import { File } from '../helpers/getGoogleDrive'
 import { stopPropagation } from '../utils/stopPropagation'
 
 interface Values {
     fileName: string
 }
 
-export function useRenameFileModal(file: DriveFile, account: Account) {
+export function useRenameFileModal(file: File) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
 
     const handleFormSubmit = ({ fileName }: Values): void => {
         close()
         if (file.name === fileName) return
-        updateFile(account, file, { name: fileName })
+        updateFile(file, { name: fileName })
     }
 
     const close = (): void => {

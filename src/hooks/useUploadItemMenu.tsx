@@ -2,7 +2,7 @@ import { ItemType } from 'antd/es/menu/interface'
 import { useMemo } from 'react'
 import { Icon } from '../components/Icon'
 import { openWithBrowser } from '../helpers/openWithBrowser'
-import { UploadItem } from '../store/types'
+import { UploadItem } from '../helpers/makeUploadItem'
 
 export function useUploadItemMenu(uploadItem: UploadItem) {
     const items = useMemo<ItemType[]>(() => {

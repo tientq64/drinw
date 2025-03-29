@@ -1,6 +1,6 @@
 import { UploadStatusEnum } from '../constants/uploadStatuses'
 import { getUploadItem } from '../store/getUploadItem'
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 import { handleUploadItemDownloading } from './handleUploadItemDownloading'
 import { handleUploadItemPreload } from './handleUploadItemPreload'
 import { handleUploadItemSuccess } from './handleUploadItemSuccess'

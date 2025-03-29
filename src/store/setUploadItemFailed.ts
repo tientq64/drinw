@@ -1,5 +1,5 @@
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from './types'
+import { UploadItem } from '../helpers/makeUploadItem'
 import { updateUploadItem } from './updateUploadItem'
 
 export function setUploadItemFailed(uploadItem: UploadItem, failureReason: unknown): void {

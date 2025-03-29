@@ -1,17 +1,16 @@
 import { ItemType } from 'antd/es/menu/interface'
 import { restoreFile } from '../api/restoreFile'
 import { Icon } from '../components/Icon'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { Account } from '../store/types'
+import { File } from '../helpers/getGoogleDrive'
 
-export function useTrashedFileCellMenu(file: DriveFile, account: Account) {
+export function useTrashedFileMenu(file: File) {
     const items: ItemType[] = [
         {
             key: 'restore',
             label: 'Khôi phục',
             icon: <Icon name="undo" />,
             onClick: () => {
-                restoreFile(file, account)
+                restoreFile(file)
             }
         },
         {

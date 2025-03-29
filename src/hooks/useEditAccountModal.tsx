@@ -2,12 +2,12 @@ import { Form, Input, Select } from 'antd'
 import Modal from 'antd/es/modal'
 import { DefaultOptionType } from 'antd/es/select'
 import { ReactElement, useEffect, useState } from 'react'
+import { AccountKindLabel } from '../components/AccountKindLabel'
 import { AccountKindEnum, accountKinds } from '../constants/accountKinds'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
 import { Account } from '../store/types'
 import { updateAccount } from '../store/updateAccount'
 import { stopPropagation } from '../utils/stopPropagation'
-import { AccountKindLabel } from '../components/AccountKindLabel'
 
 interface Values {
     title?: string
@@ -17,16 +17,12 @@ interface Values {
 export function useEditAccountModal(account: Account) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
-    const kindName = Form.useWatch('kindName', form)
 
     const emailName: string = getAccountEmailName(account.email)
 
     const handleFormSubmit = ({ title, kindName }: Values): void => {
-        title ||= undefined
-        kindName ||= undefined
-        if (account.title === title && account.kindName === kindName) return
-        updateAccount(account, { title, kindName })
         close()
+        updateAccount(account, { title, kindName })
     }
 
     const close = (): void => {

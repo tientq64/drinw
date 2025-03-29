@@ -1,5 +1,5 @@
 import { find } from 'lodash-es'
-import { UploadItem } from './types'
+import { UploadItem } from '../helpers/makeUploadItem'
 import { setState } from './useAppStore'
 
 export function updateUploadItem(uploadItem: UploadItem, updateData: Partial<UploadItem>): void {

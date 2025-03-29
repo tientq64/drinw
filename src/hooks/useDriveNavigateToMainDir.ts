@@ -1,35 +1,25 @@
 import { useEffect } from 'react'
-import { folderMime } from '../constants/constants'
-import { getAccountEmailName } from '../helpers/getAccountEmailName'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { useAppStore } from '../store/useAppStore'
-import { useCurrentDir } from './useCurrentDir'
-import { rootDir, useDriveNavigate } from './useDriveNavigate'
+import { rootDirId } from '../constants/constants'
+import { File } from '../helpers/getGoogleDrive'
+import { makeMainDir } from '../helpers/makeMainDir'
+import { Account } from '../store/types'
+import { useDriveNavigate } from './useDriveNavigate'
 
-export function useDriveNavigateToMainDir(): void {
-    const currentAccount = useAppStore((state) => state.currentAccount)
-    if (currentAccount === undefined) return
-
-    const inTrash = useAppStore((state) => state.inTrash)
-    const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
-
-    const currentDir = useCurrentDir()
-    if (currentDir === undefined) return
-
+export function useDriveNavigateToMainDir(
+    currentAccount: Account,
+    inTrash: boolean,
+    breadcrumbItems: File[],
+    currentDir: File
+): void {
     const driveNavigate = useDriveNavigate()
 
-    const currentAccountName: string = getAccountEmailName(currentAccount.email)
-
     useEffect(() => {
-        if (currentDir.id !== rootDir.id) return
+        if (currentDir.id !== rootDirId) return
         if (inTrash) return
         if (currentAccount.mainDirId === undefined) return
-        const mainDir: DriveFile = {
-            id: currentAccount.mainDirId,
-            name: currentAccountName,
-            mimeType: folderMime,
-            webViewLink: `https://drive.google.com/drive/folders/${currentAccount.mainDirId}`
-        }
+
+        const mainDir: File = makeMainDir(currentAccount)
+
         driveNavigate(
             {
                 breadcrumbItems: [...breadcrumbItems, mainDir]

@@ -1,6 +1,5 @@
 import FormData from 'form-data'
 import { createReadStream, existsSync, ReadStream, statSync } from 'fs-extra'
-import { pickBy } from 'lodash-es'
 import fetch, { Response } from 'node-fetch'
 import {
     driveMultipartUploadUrl,
@@ -8,11 +7,11 @@ import {
     maxSafeMultipartUploadSize
 } from '../constants/constants'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 import { getState } from '../store/useAppStore'
 import { wait } from '../utils/wait'
 import { getAccessToken } from './getAccessToken'
-import { DriveFile, DriveFileProperties } from './getGoogleDrive'
+import { DriveFile, File, FileProperties } from './getGoogleDrive'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
 import { makeFileDescription } from './makeFileDescription'
 import { makeFileProperties } from './makeFileProperties'
@@ -25,8 +24,6 @@ export async function handleUploadItemUploading(uploadItem: UploadItem): Promise
     })
 
     const isUploadFromUrl: boolean = uploadItem.pageUrl !== undefined
-
-    if (uploadItem.account === undefined) return
 
     if (uploadItem.destDir === undefined) return
     if (uploadItem.destDir.id == null) {
@@ -56,14 +53,14 @@ export async function handleUploadItemUploading(uploadItem: UploadItem): Promise
         totalProgress: fileSize
     })
 
-    const accessToken: string | undefined = await getAccessToken(uploadItem.account)
+    const accessToken: string | undefined = await getAccessToken(uploadItem.destDir.account)
     if (accessToken === undefined) {
         setFailed('Không lấy được access token')
         return
     }
 
     let description: string | undefined = undefined
-    let properties: Partial<DriveFileProperties> | undefined = undefined
+    let properties: Partial<FileProperties> | undefined = undefined
 
     if (isUploadFromUrl) {
         description = makeFileDescription(uploadItem)
@@ -172,7 +169,7 @@ export async function handleUploadItemUploading(uploadItem: UploadItem): Promise
     }
 
     if (uploadRes !== undefined && uploadRes.ok && uploadRes.status === 200) {
-        const uploadedFile = (await uploadRes.json()) as DriveFile
+        const uploadedFile = (await uploadRes.json()) as File
 
         update({ uploadedFile })
         next()

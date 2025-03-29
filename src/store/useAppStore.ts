@@ -1,9 +1,10 @@
 import { produce, WritableDraft } from 'immer'
 import { create } from 'zustand'
 import { ViewModeEnum } from '../constants/viewModes'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 import { loadUserData, UserData } from '../helpers/loadUserData'
-import { Account, UploadItem } from './types'
+import { Account } from './types'
+import { UploadItem } from '../helpers/makeUploadItem'
 import { MB } from '../constants/constants'
 
 export interface AppStore {
@@ -11,8 +12,8 @@ export interface AppStore {
     accounts: Account[]
     currentAccount: Account | undefined
     inTrash: boolean
-    breadcrumbItems: DriveFile[]
-    currentFiles: DriveFile[]
+    breadcrumbItems: File[]
+    currentFiles: File[]
     viewModeName: ViewModeEnum
     uploadItems: UploadItem[]
     isDefaultSmartUpload: boolean

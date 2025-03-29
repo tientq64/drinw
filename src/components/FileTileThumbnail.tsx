@@ -1,8 +1,8 @@
 import { ReactNode, SyntheticEvent, useState } from 'react'
-import { DriveFile } from '../helpers/getGoogleDrive'
+import { File } from '../helpers/getGoogleDrive'
 
 interface FileTileThumbnailProps {
-    file: DriveFile
+    file: File
 }
 
 const errorThumbnailLinks: Record<string, boolean> = {}

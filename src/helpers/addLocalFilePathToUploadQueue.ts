@@ -1,34 +1,18 @@
-import { Stats, statSync } from 'fs-extra'
-import { nanoid } from 'nanoid'
-import { basename } from 'path'
-import { UploadStatusEnum } from '../constants/uploadStatuses'
 import { addUploadItem } from '../store/addUploadItem'
-import { Account, UploadItem } from '../store/types'
-import { DriveFile } from './getGoogleDrive'
+import { File } from './getGoogleDrive'
+import { makeUploadItem, UploadItem } from './makeUploadItem'
 
 interface Options {
     localFilePath: string
-    account: Account
-    destDir: DriveFile
+    destDir: File
 }
 
-export function addLocalFilePathToUploadQueue({ localFilePath, account, destDir }: Options): void {
-    const stats: Stats = statSync(localFilePath)
-
-    const fileName: string = basename(localFilePath)
-    const fileSize: number = stats.size
-
-    const uploadItem: UploadItem = {
-        id: nanoid(),
-        statusName: UploadStatusEnum.Idle,
-        isSmartUpload: false,
-        progress: 0,
-        estimatedSize: fileSize,
+export function addLocalFilePathToUploadQueue({ localFilePath, destDir }: Options): UploadItem {
+    const uploadItem: UploadItem = makeUploadItem({
         localFilePath,
-        account,
-        destDir,
-        fileName,
-        fileSize
-    }
+        destDir
+    })
     addUploadItem(uploadItem)
+
+    return uploadItem
 }

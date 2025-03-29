@@ -1,7 +1,8 @@
 import { SubprocessPromise } from 'tinyspawn'
 import { youtubeDl } from 'youtube-dl-exec'
+import { youtubeDlDownloadFormat } from '../constants/constants'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
 import { parseFileSize } from './parseFileSize'
 
@@ -22,7 +23,7 @@ export function handleUploadItemDownloading(uploadItem: UploadItem): void {
 
         try {
             proc = youtubeDl.exec(uploadItem.pageUrl, {
-                format: 'bv*+ba/b',
+                format: youtubeDlDownloadFormat,
                 output: tempDownloadFilePath
             })
             if (proc.stdout === null) {

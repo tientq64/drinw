@@ -1,7 +1,8 @@
 import { maxBy } from 'lodash-es'
 import { Format, Payload, youtubeDl } from 'youtube-dl-exec'
+import { youtubeDlDownloadFormat } from '../constants/constants'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from '../store/types'
+import { UploadItem } from './makeUploadItem'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
 
 const removeTiktokTagInTitleRegex: RegExp =
@@ -20,8 +21,8 @@ export async function handleUploadItemPreload(uploadItem: UploadItem): Promise<v
         let data: Payload | string
         try {
             data = await youtubeDl(pageUrl, {
-                dumpSingleJson: true,
-                format: 'bv*+ba/b'
+                format: youtubeDlDownloadFormat,
+                dumpSingleJson: true
             })
         } catch (error) {
             setFailed('Không lấy được thông tin tệp từ URL')

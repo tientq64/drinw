@@ -1,33 +1,27 @@
 import { ReactNode } from 'react'
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { useFileCellMenu } from '../hooks/useFileCellMenu'
-import { useTrashedFileCellMenu } from '../hooks/useTrashedFileCellMenu'
-import { Account } from '../store/types'
+import { File } from '../helpers/getGoogleDrive'
+import { useFileMenu } from '../hooks/useFileMenu'
 import { ContextMenu } from './ContextMenu'
 
 interface FileCellProps {
-    file: DriveFile
-    account: Account
+    file: File
     children?: ReactNode
 }
 
-export function FileCell({ file, account, children }: FileCellProps): ReactNode {
-    const driveFileCellMenu = useFileCellMenu(file, account)
-    const trashedFileCellMenu = useTrashedFileCellMenu(file, account)
-
-    const fileCellMenu = file.trashed ? trashedFileCellMenu : driveFileCellMenu
+export function FileCell({ file, children }: FileCellProps): ReactNode {
+    const fileMenu = useFileMenu(file)
 
     return (
         <>
             <ContextMenu
                 className="flex h-8 items-center"
                 openClassName="context-menu-open"
-                items={fileCellMenu.items}
+                items={fileMenu.items}
             >
                 <div className="line-clamp-2">{children}</div>
             </ContextMenu>
 
-            {fileCellMenu.modals}
+            {fileMenu.modals}
         </>
     )
 }

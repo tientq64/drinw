@@ -1,5 +1,5 @@
 import { find } from 'lodash-es'
-import { UploadItem } from './types'
+import { UploadItem } from '../helpers/makeUploadItem'
 import { getState } from './useAppStore'
 
 export function getUploadItem(id: string): UploadItem | undefined

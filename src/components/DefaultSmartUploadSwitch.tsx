@@ -3,12 +3,7 @@ import { ReactNode } from 'react'
 import { setIsDefaultSmartUpload } from '../store/setIsDefaultSmartUpload'
 import { useAppStore } from '../store/useAppStore'
 
-interface DefaultSmartUploadSwitchProps extends SwitchProps {}
-
-export function DefaultSmartUploadSwitch({
-    size,
-    ...props
-}: DefaultSmartUploadSwitchProps): ReactNode {
+export function DefaultSmartUploadSwitch({ size, ...props }: SwitchProps): ReactNode {
     const isDefaultSmartUpload = useAppStore((state) => state.isDefaultSmartUpload)
 
     const handleDefaultSmartUploadChange = (checked: boolean): void => {

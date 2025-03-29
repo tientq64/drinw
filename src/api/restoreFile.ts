@@ -1,7 +1,6 @@
-import { DriveFile } from '../helpers/getGoogleDrive'
-import { Account } from '../store/types'
+import { File } from '../helpers/getGoogleDrive'
 import { updateFile } from './updateFile'
 
-export function restoreFile(file: DriveFile, account: Account): Promise<DriveFile> {
-    return updateFile(account, file, { trashed: false })
+export function restoreFile(file: File): Promise<File> {
+    return updateFile(file, { trashed: false })
 }

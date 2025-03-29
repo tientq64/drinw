@@ -27,9 +27,8 @@ body {
 
 .ant-message {
     top: 16px !important;
-}
-.dnw-unmaximized {
-    .ant-message {
+
+    .dnw-unmaximized & {
         top: 24px !important;
     }
 }
@@ -47,6 +46,14 @@ body {
 
         .ant-menu-item-icon {
             line-height: 32px;
+        }
+    }
+}
+
+.ant-table-wrapper {
+    .ant-table-container {
+        &::after {
+            display: none;
         }
     }
 }

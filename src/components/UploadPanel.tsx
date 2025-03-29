@@ -1,10 +1,6 @@
-import { useUpdateEffect } from 'ahooks'
 import { Table } from 'antd'
-import { ReactNode, useMemo } from 'react'
-import { filterPendingItems } from '../helpers/filterPendingItems'
-import { tryStartUploadFromQueue } from '../helpers/tryStartUploadFromQueue'
+import { ReactNode } from 'react'
 import { useWindowContentSize } from '../hooks/useWindowContentSize'
-import { UploadItem } from '../store/types'
 import { useAppStore } from '../store/useAppStore'
 import { headerBarHeight } from './HeaderBar'
 import { UploadItemRow } from './UploadItemRow'
@@ -32,6 +28,9 @@ export function UploadPanel(): ReactNode {
                     }
                 ]}
                 dataSource={uploadItems}
+                locale={{
+                    emptyText: 'Không có tệp nào đang tải lên'
+                }}
             />
         </div>
     )

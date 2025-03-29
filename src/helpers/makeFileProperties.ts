@@ -1,16 +1,16 @@
 import { pickBy } from 'lodash-es'
-import { DriveFileProperties } from './getGoogleDrive'
+import { FileProperties } from './getGoogleDrive'
 
-export type PropertiesData = Omit<DriveFileProperties, 'id'> & {
+export type PropertiesData = Omit<FileProperties, 'id'> & {
     fileId?: string
 }
 
 export function makeFileProperties(
     data: PropertiesData | undefined
-): Partial<DriveFileProperties> | undefined {
+): Partial<FileProperties> | undefined {
     if (data === undefined) return undefined
 
-    return pickBy<DriveFileProperties>({
+    return pickBy<FileProperties>({
         id: data.fileId,
         userId: data.userId,
         userName: data.userName,
