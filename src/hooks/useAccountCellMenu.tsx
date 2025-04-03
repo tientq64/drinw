@@ -14,7 +14,7 @@ export function useAccountCellMenu(account: Account) {
             {
                 key: 'open',
                 label: 'Mở',
-                icon: <Icon name="folder_open" />,
+                icon: <Icon name="folder-open" />,
                 onClick: () => {
                     driveNavigate({ currentAccount: account })
                 }
@@ -25,7 +25,7 @@ export function useAccountCellMenu(account: Account) {
             {
                 key: 'change-kind',
                 label: 'Chỉnh sửa',
-                icon: <Icon name="edit_square" />,
+                icon: <Icon name="edit-square" />,
                 onClick: () => {
                     editAccountModal.setIsOpen(true)
                 }

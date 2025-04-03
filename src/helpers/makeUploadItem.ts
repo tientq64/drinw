@@ -3,11 +3,12 @@ import { nanoid } from 'nanoid'
 import { basename } from 'path'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
 import { getState } from '../store/useAppStore'
+import { formatPath } from '../utils/formatPath'
 import { estimateFileSize } from './estimateFileSize'
 import { File } from './getGoogleDrive'
 
 export interface UploadItem {
-    id: string
+    readonly id: string
     statusName: UploadStatusEnum
     isSmartUpload: boolean
     progress: number
@@ -16,8 +17,11 @@ export interface UploadItem {
     pageUrl?: string
     localFilePath?: string
     localDirPath?: string
-    subItems: UploadItem[]
+    sourceCode?: string
     isSubItem: boolean
+    subItemIds: string[]
+    allSubItemIds: string[]
+    isReady: boolean
     destDir?: File
     fileName?: string
     fileSize?: number
@@ -32,33 +36,25 @@ export interface UploadItem {
     message?: string
 }
 
-type MakeUploadItemPickKeys =
-    | 'isSmartUpload'
-    | 'estimatedSize'
-    | 'pageUrl'
-    | 'localFilePath'
-    | 'localDirPath'
-    | 'isSubItem'
-    | 'destDir'
-    | 'fileName'
-    | 'fileSize'
-type MakeUploadItem = Partial<Pick<UploadItem, MakeUploadItemPickKeys>>
-
-export function makeUploadItem(partial: MakeUploadItem): UploadItem {
+export function makeUploadItem(partial: Partial<UploadItem>): UploadItem {
     let {
         isSmartUpload,
         estimatedSize,
         pageUrl,
         localFilePath,
         localDirPath,
+        sourceCode,
         isSubItem = false,
+        isReady = true,
         destDir,
         fileName,
         fileSize
     } = partial
 
+    isSmartUpload ??= getState().isDefaultSmartUpload
+
     if (localFilePath !== undefined) {
-        localFilePath = localFilePath.replaceAll('\\', '/')
+        localFilePath = formatPath(localFilePath)
         const stats: Stats = statSync(localFilePath)
         isSmartUpload = false
         fileName = basename(localFilePath)
@@ -66,16 +62,17 @@ export function makeUploadItem(partial: MakeUploadItem): UploadItem {
         estimatedSize = fileSize
     } //
     else if (localDirPath !== undefined) {
-        localDirPath = localDirPath.replace('\\', '/')
+        localDirPath = formatPath(localDirPath)
         isSmartUpload = false
         fileName = basename(localDirPath)
     } //
     else if (pageUrl !== undefined) {
-        isSmartUpload ??= getState().isDefaultSmartUpload
         estimatedSize ??= estimateFileSize(pageUrl)
     } //
+    else if (sourceCode !== undefined) {
+    } //
     else {
-        throw Error('Thiếu "localFilePath" hoặc "pageUrl"')
+        throw Error('Thiếu "localFilePath", "localDirPath", "pageUrl" hoặc "sourceCode"')
     }
 
     return {
@@ -87,8 +84,11 @@ export function makeUploadItem(partial: MakeUploadItem): UploadItem {
         pageUrl,
         localFilePath,
         localDirPath,
-        subItems: [],
+        sourceCode,
         isSubItem,
+        subItemIds: [],
+        allSubItemIds: [],
+        isReady,
         destDir,
         fileName,
         fileSize

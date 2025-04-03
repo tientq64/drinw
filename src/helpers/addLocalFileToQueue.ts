@@ -4,13 +4,22 @@ import { makeUploadItem, UploadItem } from './makeUploadItem'
 
 interface Options {
     localFilePath: string
-    destDir: File
+    destDir?: File
+    isSubItem?: boolean
+    isReady?: boolean
 }
 
-export function addLocalFilePathToUploadQueue({ localFilePath, destDir }: Options): UploadItem {
+export function addLocalFileToQueue({
+    localFilePath,
+    destDir,
+    isSubItem = false,
+    isReady = true
+}: Options): UploadItem {
     const uploadItem: UploadItem = makeUploadItem({
         localFilePath,
-        destDir
+        destDir,
+        isSubItem,
+        isReady
     })
     addUploadItem(uploadItem)
 

@@ -1,21 +1,21 @@
 import { Form, Input, Modal } from 'antd'
 import { ReactElement, useEffect, useState } from 'react'
-import { updateFile } from '../api/updateFile'
+import { renameFile } from '../api/renameFile'
 import { File } from '../helpers/getGoogleDrive'
 import { stopPropagation } from '../utils/stopPropagation'
 
 interface Values {
-    fileName: string
+    newName: string
 }
 
 export function useRenameFileModal(file: File) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [form] = Form.useForm<Values>()
 
-    const handleFormSubmit = ({ fileName }: Values): void => {
+    const handleFormSubmit = ({ newName }: Values): void => {
         close()
-        if (file.name === fileName) return
-        updateFile(file, { name: fileName })
+        if (newName === file.name) return
+        renameFile(file, newName)
     }
 
     const close = (): void => {
@@ -25,9 +25,9 @@ export function useRenameFileModal(file: File) {
 
     useEffect(() => {
         if (!isOpen) return
-        form.setFieldValue('fileName', file.name)
+        form.setFieldValue('newName', file.name)
         setTimeout(() => {
-            form.focusField('fileName')
+            form.focusField('newName')
         })
     }, [isOpen])
 
@@ -43,7 +43,7 @@ export function useRenameFileModal(file: File) {
             >
                 <Form form={form} onFinish={handleFormSubmit}>
                     <Form.Item
-                        name="fileName"
+                        name="newName"
                         rules={[
                             {
                                 required: true,

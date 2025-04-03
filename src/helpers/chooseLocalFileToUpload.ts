@@ -1,4 +1,4 @@
-import { addLocalFilePathToUploadQueue } from './addLocalFilePathToUploadQueue'
+import { addLocalFileToQueue } from './addLocalFileToQueue'
 import { File } from './getGoogleDrive'
 import { showFilePicker } from './showFilePicker'
 import { tryStartUploadFromQueue } from './tryStartUploadFromQueue'
@@ -11,7 +11,7 @@ export function chooseLocalFileToUpload(destDir: File): void {
     if (filePaths === undefined) return
 
     for (const filePath of filePaths) {
-        addLocalFilePathToUploadQueue({ localFilePath: filePath, destDir })
+        addLocalFileToQueue({ localFilePath: filePath, destDir })
     }
     tryStartUploadFromQueue()
 }

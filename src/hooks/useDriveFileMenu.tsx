@@ -2,6 +2,7 @@ import { ItemType } from 'antd/es/menu/interface'
 import { moveFileToTrash } from '../api/moveFileToTrash'
 import { Icon } from '../components/Icon'
 import { folderMime } from '../constants/constants'
+import { formatMenuItems } from '../helpers/formatMenuItems'
 import { File } from '../helpers/getGoogleDrive'
 import { openWithBrowser } from '../helpers/openWithBrowser'
 import { useOpenFile } from './useOpenFile'
@@ -13,11 +14,11 @@ export function useDriveFileMenu(file: File) {
 
     const isDir: boolean = file.mimeType === folderMime
 
-    const rawItems: (ItemType | boolean)[] = [
+    const items: ItemType[] = formatMenuItems([
         isDir && {
             key: 'open',
             label: 'Mở',
-            icon: <Icon name="folder_open" />,
+            icon: <Icon name="folder-open" />,
             onClick: () => {
                 openFile(file)
             }
@@ -25,7 +26,7 @@ export function useDriveFileMenu(file: File) {
         {
             key: 'open-with-browser',
             label: 'Mở trong trình duyệt',
-            icon: <Icon name="open_in_new" />,
+            icon: <Icon name="open-in-new" />,
             onClick: () => {
                 openFile(file, true)
             }
@@ -45,7 +46,7 @@ export function useDriveFileMenu(file: File) {
         {
             key: 'open-user',
             label: 'Mở link tác giả',
-            icon: <Icon name="account_box" />,
+            icon: <Icon name="account-box" />,
             disabled: !(file.properties?.channelUrl || file.properties?.userUrl),
             onClick: () => {
                 openWithBrowser(file.properties?.channelUrl || file.properties?.userUrl)
@@ -57,7 +58,7 @@ export function useDriveFileMenu(file: File) {
         {
             key: 'rename',
             label: 'Đổi tên',
-            icon: <Icon name="border_color" />,
+            icon: <Icon name="border-color" />,
             onClick: () => {
                 renameFileModal.setIsOpen(true)
             }
@@ -79,10 +80,7 @@ export function useDriveFileMenu(file: File) {
             label: 'Thông tin chi tiết',
             icon: <Icon name="info" />
         }
-    ]
-    const items: ItemType[] = rawItems.filter((rawItem) => {
-        return typeof rawItem === 'object'
-    })
+    ])
 
     return { items, modals: renameFileModal.modal }
 }

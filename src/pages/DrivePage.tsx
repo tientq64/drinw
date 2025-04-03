@@ -4,9 +4,11 @@ import { ReactNode, useEffect, useState } from 'react'
 import { AutoSizer, Grid, ScrollParams } from 'react-virtualized'
 import { getFiles } from '../api/getFiles'
 import { ContextMenu } from '../components/ContextMenu'
+import { DriveDropper } from '../components/DriveDropper'
 import { FileCell } from '../components/FileCell'
 import { FileTile } from '../components/FileTile'
 import { folderMime, rootDirId } from '../constants/constants'
+import { getFileIconUrl } from '../constants/fileIconUrls'
 import { ViewModeEnum } from '../constants/viewModes'
 import { File } from '../helpers/getGoogleDrive'
 import { useCurrentDir } from '../hooks/useCurrentDir'
@@ -180,7 +182,7 @@ export function DrivePage(): ReactNode {
     return (
         <>
             <ContextMenu className="h-full overflow-hidden" items={drivePageMenu.items}>
-                <div className="relative h-full">
+                <DriveDropper>
                     <AutoSizer>
                         {(size) => (
                             <>
@@ -195,7 +197,7 @@ export function DrivePage(): ReactNode {
                                         virtual
                                         pagination={false}
                                         rowKey="id"
-                                        rowClassName="[&:has(.context-menu-open)>div]:!bg-zinc-800 h-[33px] leading-4 cursor-default"
+                                        rowClassName="h-[33px] cursor-default leading-4 [&:has(.context-menu-open)>div]:!bg-zinc-800"
                                         onHeaderRow={() => ({
                                             className: '[&>th]:!rounded-none whitespace-nowrap'
                                         })}
@@ -219,7 +221,18 @@ export function DrivePage(): ReactNode {
                                                 width: size.width * 0.5,
                                                 className: '!py-0',
                                                 render: (_, file) => (
-                                                    <FileCell file={file}>{file.name}</FileCell>
+                                                    <FileCell file={file} tabIndex={0}>
+                                                        <div className="flex min-w-0 items-center gap-2">
+                                                            <img
+                                                                className="size-4"
+                                                                src={getFileIconUrl(file)}
+                                                                loading="lazy"
+                                                            />
+                                                            <div className="line-clamp-2">
+                                                                {file.name}
+                                                            </div>
+                                                        </div>
+                                                    </FileCell>
                                                 )
                                             },
                                             {
@@ -242,13 +255,13 @@ export function DrivePage(): ReactNode {
                                             },
                                             {
                                                 title: 'Properties',
-                                                dataIndex: 'trashed',
+                                                dataIndex: 'properties',
                                                 render: (value) => value?.id || value?.userId
                                             }
                                         ]}
                                         dataSource={currentFiles}
                                         locale={{
-                                            emptyText: (
+                                            emptyText: () => (
                                                 <>
                                                     {firstLoading && 'Đang tải...'}
                                                     {!firstLoading && 'Thư mục trống'}
@@ -297,7 +310,7 @@ export function DrivePage(): ReactNode {
                             Đang tải...
                         </div>
                     )}
-                </div>
+                </DriveDropper>
             </ContextMenu>
 
             {drivePageMenu.modals}

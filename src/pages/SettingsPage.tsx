@@ -137,14 +137,14 @@ export function SettingsPage(): ReactNode {
                     >
                         <Radio value={true}>
                             <div className="flex min-w-16 flex-col items-center justify-center">
-                                <Icon name="smart_toy" />
+                                <Icon name="smart-toy" />
                                 Tự động
                             </div>
                         </Radio>
 
                         <Radio value={false}>
                             <div className="flex min-w-16 flex-col items-center justify-center">
-                                <Icon name="back_hand" />
+                                <Icon name="back-hand" />
                                 Thủ công
                             </div>
                         </Radio>

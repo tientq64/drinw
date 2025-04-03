@@ -19,7 +19,7 @@ export function useTrashedFileMenu(file: File) {
         {
             key: 'delete',
             label: 'Xóa vĩnh viễn',
-            icon: <Icon name="delete_forever" />,
+            icon: <Icon name="delete-forever" />,
             danger: true,
             onClick: () => {}
         }

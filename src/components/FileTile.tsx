@@ -52,9 +52,9 @@ export function FileTile({ file, style, onDoubleClick }: FileTileProps): ReactNo
             >
                 <Popover
                     rootClassName="max-w-96 pointer-events-none"
-                    mouseEnterDelay={0.5}
-                    arrow={false}
                     placement="rightBottom"
+                    arrow={false}
+                    mouseEnterDelay={0.5}
                     content={
                         <Descriptions
                             className="[&_.ant-descriptions-view_table]:w-auto"
@@ -68,8 +68,9 @@ export function FileTile({ file, style, onDoubleClick }: FileTileProps): ReactNo
                         className="h-full hover:border-zinc-600"
                         size="small"
                         hoverable
+                        tabIndex={0}
                         onDoubleClick={onDoubleClick}
-                        cover={file.thumbnailLink && <FileTileThumbnail file={file} />}
+                        cover={<FileTileThumbnail file={file} />}
                     >
                         <Card.Meta
                             description={

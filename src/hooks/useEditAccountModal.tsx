@@ -22,7 +22,7 @@ export function useEditAccountModal(account: Account) {
 
     const handleFormSubmit = ({ title, kindName }: Values): void => {
         close()
-        updateAccount(account, { title, kindName })
+        updateAccount(account.email, { title, kindName })
     }
 
     const close = (): void => {

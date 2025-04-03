@@ -1,12 +1,14 @@
-import { UploadStatusEnum } from '../constants/uploadStatuses'
+import { handleUploadItemFailed } from '../helpers/handleUploadItemFailed'
 import { UploadItem } from '../helpers/makeUploadItem'
+import { getUploadItem } from './getUploadItem'
 import { updateUploadItem } from './updateUploadItem'
 
-export function setUploadItemFailed(uploadItem: UploadItem, failureReason: unknown): void {
-    const message: string = String(failureReason)
+export function setUploadItemFailed(id: string, failureReason: unknown): void {
+    const uploadItem: UploadItem | undefined = getUploadItem(id)
+    if (uploadItem === undefined) return
 
-    updateUploadItem(uploadItem, {
-        statusName: UploadStatusEnum.Failed,
-        message
-    })
+    const message: string = String(failureReason)
+    updateUploadItem(id, { message })
+
+    handleUploadItemFailed(uploadItem)
 }

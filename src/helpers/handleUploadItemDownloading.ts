@@ -2,18 +2,16 @@ import { SubprocessPromise } from 'tinyspawn'
 import { youtubeDl } from 'youtube-dl-exec'
 import { youtubeDlDownloadFormat } from '../constants/constants'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from './makeUploadItem'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
+import { UploadItem } from './makeUploadItem'
 import { parseFileSize } from './parseFileSize'
 
 export function handleUploadItemDownloading(uploadItem: UploadItem): void {
-    const { update, setFailed, next } = getUploadItemUpdater(uploadItem)
+    const { setup, update, setFailed, next } = getUploadItemUpdater(uploadItem.id)
 
-    update({
-        statusName: UploadStatusEnum.Downloading,
-        progress: 0,
-        totalProgress: uploadItem.estimatedSize
-    })
+    setup(UploadStatusEnum.Downloading)
+
+    update({ totalProgress: uploadItem.estimatedSize })
 
     if (uploadItem.pageUrl !== undefined) {
         let proc: SubprocessPromise

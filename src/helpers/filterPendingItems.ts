@@ -1,11 +1,6 @@
-import { UploadStatusEnum } from '../constants/uploadStatuses'
+import { checkIsPendingItem } from './checkIsPendingItem'
 import { UploadItem } from './makeUploadItem'
 
-export function filterPendingItems(uploadItems: UploadItem[]): UploadItem[] {
-    return uploadItems.filter((uploadItem) => {
-        return (
-            uploadItem.statusName === UploadStatusEnum.Idle ||
-            uploadItem.statusName === UploadStatusEnum.Waiting
-        )
-    })
+export function filterPendingItems(uploadItems: UploadItem[], isReady?: boolean): UploadItem[] {
+    return uploadItems.filter((item) => checkIsPendingItem(item, isReady))
 }

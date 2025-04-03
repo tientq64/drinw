@@ -1,3 +1,5 @@
+import { MaterialIconName } from 'ts-material-icon-name-list/kebab'
+
 export const enum ViewModeEnum {
     List = 'list',
     Grid = 'grid'
@@ -6,18 +8,18 @@ export const enum ViewModeEnum {
 export interface ViewMode {
     name: ViewModeEnum
     text: string
-    iconName: string
+    iconName: MaterialIconName
 }
 
 export const viewModes: ViewMode[] = [
     {
         name: ViewModeEnum.List,
         text: 'Danh sách',
-        iconName: 'format_list_bulleted'
+        iconName: 'format-list-bulleted'
     },
     {
         name: ViewModeEnum.Grid,
         text: 'Lưới',
-        iconName: 'grid_view'
+        iconName: 'grid-view'
     }
 ]

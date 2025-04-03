@@ -5,7 +5,7 @@ import { ReactNode, useMemo } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { filterProcessingItems } from './helpers/filterProcessingItems'
 import { init } from './helpers/init'
-import { router } from './router'
+import { router } from './router/router'
 import { useAppStore } from './store/useAppStore'
 
 init()

@@ -21,7 +21,7 @@ export function useDrivePageMenu(dir: File) {
         {
             key: 'go-parent',
             label: 'Đến thư mục cha',
-            icon: <Icon name="arrow_upward" />,
+            icon: <Icon name="arrow-upward" />,
             disabled: dir.id === dir.account.mainDirId,
             onClick: () => {
                 driveNavigate({
@@ -41,7 +41,7 @@ export function useDrivePageMenu(dir: File) {
         {
             key: 'create-dir',
             label: 'Thư mục mới',
-            icon: <Icon name="create_new_folder" />,
+            icon: <Icon name="create-new-folder" />,
             onClick: () => createDirModal.setIsOpen(true)
         },
         {
@@ -56,8 +56,11 @@ export function useDrivePageMenu(dir: File) {
         {
             key: 'upload-dir',
             label: 'Tải thư mục lên từ máy tính',
-            icon: <Icon name="drive_folder_upload" />,
+            icon: <Icon name="drive-folder-upload" />,
             onClick: () => chooseLocalDirToUpload(dir)
+        },
+        {
+            type: 'divider'
         },
         {
             key: 'upload-from-url',
@@ -66,12 +69,17 @@ export function useDrivePageMenu(dir: File) {
             onClick: () => uploadFromUrlModal.setIsOpen(true)
         },
         {
+            key: 'upload-from-source',
+            label: 'Tải tệp lên từ mã nguồn trang web',
+            icon: <Icon name="code" />
+        },
+        {
             type: 'divider'
         },
         {
             key: 'open-with-browser',
             label: 'Mở thư mục hiện tại trong trình duyệt',
-            icon: <Icon name="open_in_new" />,
+            icon: <Icon name="open-in-new" />,
             onClick: () => openFile(dir, true)
         }
     ]

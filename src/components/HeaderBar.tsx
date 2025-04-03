@@ -47,27 +47,27 @@ export function HeaderBar(): ReactNode {
         >
             <Space.Compact size="small">
                 <Button disabled={history.state.idx === 0} onClick={() => history.back()}>
-                    <Icon name="arrow_back" />
+                    <Icon name="arrow-back" />
                 </Button>
 
                 <Button
                     disabled={history.state.idx === history.length - 1}
                     onClick={() => history.forward()}
                 >
-                    <Icon name="arrow_forward" />
+                    <Icon name="arrow-forward" />
                 </Button>
             </Space.Compact>
 
             <div className="flex-1">
                 <Breadcrumb>
                     <Breadcrumb.Item className="flex items-center gap-1">
-                        <Icon name="switch_account" />
+                        <Icon name="switch-account" />
                         Tài khoản
                     </Breadcrumb.Item>
 
                     {currentAccount !== undefined && (
                         <Breadcrumb.Item className="flex items-center gap-1">
-                            <Icon name="account_circle" />
+                            <Icon name="account-circle" />
                             {getAccountEmailName(currentAccount.email)}
                             {currentAccount.title && <> - {currentAccount.title}</>}
                         </Breadcrumb.Item>
@@ -98,6 +98,7 @@ export function HeaderBar(): ReactNode {
                                     )}
                                 </>
                             )}
+
                             {breadcrumbItem.id !== rootDirId && breadcrumbItem.name}
                         </Breadcrumb.Item>
                     ))}

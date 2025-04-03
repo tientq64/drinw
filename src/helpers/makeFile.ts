@@ -1,8 +1,18 @@
+import { nanoid } from 'nanoid'
 import { Account } from '../store/types'
 import { DriveFile, File } from './getGoogleDrive'
 
-export function makeFile(file: DriveFile | File, account: Account): File {
-    if ('account' in file) return file
+export function makeFile(driveFile: DriveFile | File, account: Account): File {
+    if ('account' in driveFile) return driveFile
 
-    return { ...file, account }
+    const file: File = {
+        ...driveFile,
+        account,
+        updateToken: nanoid()
+    }
+    if (file.thumbnailLink != null) {
+        file.thumbnailLink = file.thumbnailLink.replace(/=s220$/, '=s160')
+    }
+
+    return file
 }

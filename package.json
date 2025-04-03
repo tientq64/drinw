@@ -4,14 +4,19 @@
     "private": true,
     "type": "module",
     "main": "./out/main.js",
-    "description": "Lưu trữ Google Drive không giới hạn.",
+    "description": "Unlimited storage uploads to Google Drive.",
     "keywords": [
-        "storage",
-        "google-drive",
-        "unlimited",
+        "electron-app",
+        "file-uploader",
         "google-drive-uploader",
+        "google-drive",
         "service-accounts",
-        "unlimited-storage"
+        "storage",
+        "unlimited-storage",
+        "unlimited",
+        "upload",
+        "uploader",
+        "url-uploader"
     ],
     "author": {
         "name": "tientq64",
@@ -25,6 +30,7 @@
     "dependencies": {
         "ahooks": "3.8.4",
         "antd": "5.24.3",
+        "await-to-js": "3.0.0",
         "clsx": "2.1.1",
         "filesize": "10.1.6",
         "form-data": "4.0.2",
@@ -62,6 +68,7 @@
         "sass": "1.83.0",
         "tailwindcss": "3.4.17",
         "tinyspawn": "1.4.0",
+        "ts-material-icon-name-list": "0.0.1",
         "typescript": "5.8.2",
         "vite": "6.2.1",
         "wait-on": "8.0.3"

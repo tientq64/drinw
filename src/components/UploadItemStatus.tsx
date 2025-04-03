@@ -9,25 +9,26 @@ interface UploadItemStatusProps {
 }
 
 export function UploadItemStatus({ uploadItem }: UploadItemStatusProps): ReactNode {
+    const statusName: UploadStatusEnum = uploadItem.statusName
     const percent: number = (uploadItem.progress / (uploadItem.totalProgress || 1)) * 100 || 1
 
     return (
         <div className="flex w-8 items-center justify-center">
-            {uploadItem.statusName === UploadStatusEnum.Preload && <Spin />}
+            {statusName === UploadStatusEnum.Preload && <Spin />}
 
-            {uploadItem.statusName === UploadStatusEnum.Waiting && (
+            {statusName === UploadStatusEnum.Waiting && (
                 <Icon className="text-slate-500" name="pending" />
             )}
 
-            {uploadItem.statusName === UploadStatusEnum.Downloading && <Spin percent={percent} />}
+            {statusName === UploadStatusEnum.Downloading && <Spin percent={percent} />}
 
-            {uploadItem.statusName === UploadStatusEnum.Uploading && <Spin percent={percent} />}
+            {statusName === UploadStatusEnum.Uploading && <Spin percent={percent} />}
 
-            {uploadItem.statusName === UploadStatusEnum.Success && (
-                <Icon className="text-green-500" name="check_circle" />
+            {statusName === UploadStatusEnum.Success && (
+                <Icon className="text-green-500" name="check-circle" />
             )}
 
-            {uploadItem.statusName === UploadStatusEnum.Failed && (
+            {statusName === UploadStatusEnum.Failed && (
                 <Icon className="text-rose-500" name="error" />
             )}
         </div>

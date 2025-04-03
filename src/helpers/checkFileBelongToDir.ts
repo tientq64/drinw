@@ -1,3 +1,4 @@
+import { rootDirId } from '../constants/constants'
 import { getState } from '../store/useAppStore'
 import { File } from './getGoogleDrive'
 
@@ -10,7 +11,10 @@ export function checkFileBelongToDir(file: File, dir: File | undefined): boolean
     if (file.trashed !== inTrash) return false
 
     if (file.parents == null) return false
-    if (file.parents.includes(dir.id)) return true
 
-    return file.account.email === dir.account.email
+    if (dir.id === rootDirId) {
+        return file.account.email === dir.account.email
+    }
+
+    return file.parents.includes(dir.id)
 }

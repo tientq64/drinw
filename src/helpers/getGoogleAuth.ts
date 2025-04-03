@@ -13,5 +13,6 @@ export function getGoogleAuth(account: Account): Auth {
         },
         scopes: 'https://www.googleapis.com/auth/drive'
     })
+
     return auth
 }

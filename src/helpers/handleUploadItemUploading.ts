@@ -1,33 +1,66 @@
 import FormData from 'form-data'
-import { createReadStream, existsSync, ReadStream, statSync } from 'fs-extra'
+import { createReadStream, exists, ReadStream, stat } from 'fs-extra'
 import fetch, { Response } from 'node-fetch'
+import { createDir } from '../api/createDir'
 import {
     driveMultipartUploadUrl,
     driveResumableUploadUrl,
     maxSafeMultipartUploadSize
 } from '../constants/constants'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from './makeUploadItem'
+import { updateUploadItem } from '../store/updateUploadItem'
 import { getState } from '../store/useAppStore'
 import { wait } from '../utils/wait'
 import { getAccessToken } from './getAccessToken'
 import { DriveFile, File, FileProperties } from './getGoogleDrive'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
+import { isLocalPathUploadItem } from './isLocalPathUploadItem'
+import { makeFile } from './makeFile'
 import { makeFileDescription } from './makeFileDescription'
 import { makeFileProperties } from './makeFileProperties'
+import { UploadItem } from './makeUploadItem'
 
 export async function handleUploadItemUploading(uploadItem: UploadItem): Promise<void> {
-    const { update, message, setFailed, next } = getUploadItemUpdater(uploadItem)
+    const { setup, update, message, setFailed, next } = getUploadItemUpdater(uploadItem.id)
 
-    update({
-        statusName: UploadStatusEnum.Uploading
-    })
+    setup(UploadStatusEnum.Uploading)
 
-    const isUploadFromUrl: boolean = uploadItem.pageUrl !== undefined
+    const isUploadFromUrl: boolean = !isLocalPathUploadItem(uploadItem)
 
     if (uploadItem.destDir === undefined) return
     if (uploadItem.destDir.id == null) {
         setFailed('Thư mục đích không hợp lệ')
+        return
+    }
+
+    if (!uploadItem.fileName) {
+        setFailed('Chưa có tên tệp')
+        return
+    }
+
+    if (uploadItem.localDirPath !== undefined) {
+        const stillDirExists: boolean = await exists(uploadItem.localDirPath)
+        if (!stillDirExists) {
+            setFailed('Thư mục cần tải lên không tồn tại')
+            return
+        }
+
+        try {
+            const uploadedFile: File = await createDir(uploadItem.destDir, uploadItem.fileName)
+
+            if (uploadItem.subItemIds.length > 0) {
+                updateUploadItem(uploadItem.subItemIds, {
+                    destDir: uploadedFile,
+                    isReady: true
+                })
+            }
+            update({ uploadedFile })
+        } catch (error) {
+            setFailed(error)
+            return
+        }
+
+        next()
         return
     }
 
@@ -39,19 +72,14 @@ export async function handleUploadItemUploading(uploadItem: UploadItem): Promise
         return
     }
 
-    const stillUploadFilePathExists: boolean = existsSync(uploadFilePath)
-    if (!stillUploadFilePathExists) {
-        setFailed('Không tìm thấy tệp cần tải lên')
+    const stillUploadFileExists: boolean = await exists(uploadFilePath)
+    if (!stillUploadFileExists) {
+        setFailed('Tệp cần tải lên không tồn tại')
         return
     }
 
-    let fileSize: number = statSync(uploadFilePath).size
-
-    update({
-        fileSize,
-        progress: 0,
-        totalProgress: fileSize
-    })
+    let fileSize: number = (await stat(uploadFilePath)).size
+    update({ fileSize, totalProgress: fileSize })
 
     const accessToken: string | undefined = await getAccessToken(uploadItem.destDir.account)
     if (accessToken === undefined) {
@@ -111,7 +139,6 @@ export async function handleUploadItemUploading(uploadItem: UploadItem): Promise
                 })
                 resumableUrl = res.headers.get('Location') || undefined
             } finally {
-                console.log(resumableUrl)
                 if (resumableUrl !== undefined) break
 
                 message(`Không lấy được URL tải lên, đang thử lại lần ${n}`)
@@ -169,7 +196,8 @@ export async function handleUploadItemUploading(uploadItem: UploadItem): Promise
     }
 
     if (uploadRes !== undefined && uploadRes.ok && uploadRes.status === 200) {
-        const uploadedFile = (await uploadRes.json()) as File
+        const uploadedDriveFile: File = (await uploadRes.json()) as File
+        const uploadedFile: File = makeFile(uploadedDriveFile, uploadItem.destDir.account)
 
         update({ uploadedFile })
         next()

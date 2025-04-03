@@ -3,7 +3,7 @@ import { syncCurrentAccount } from './syncCurrentAccount'
 import { Account } from './types'
 import { setState } from './useAppStore'
 
-export function updateAccount(account: Account, updateData: Partial<Account>): void {
+export function updateAccount(email: string, updateData: Partial<Account>): void {
     if (updateData.title === '') {
         delete updateData.title
     }
@@ -12,11 +12,11 @@ export function updateAccount(account: Account, updateData: Partial<Account>): v
     }
 
     setState((draft) => {
-        const draftAccount = find(draft.accounts, { email: account.email })
+        const draftAccount = find(draft.accounts, { email })
         if (draftAccount === undefined) return
 
         Object.assign(draftAccount, updateData)
     })
 
-    syncCurrentAccount(account)
+    syncCurrentAccount(email)
 }

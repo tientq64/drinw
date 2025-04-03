@@ -5,20 +5,19 @@ import { ContextMenu } from './ContextMenu'
 
 interface FileCellProps {
     file: File
+    tabIndex?: number
     children?: ReactNode
 }
 
-export function FileCell({ file, children }: FileCellProps): ReactNode {
+export function FileCell({ file, tabIndex, children }: FileCellProps): ReactNode {
     const fileMenu = useFileMenu(file)
 
     return (
         <>
-            <ContextMenu
-                className="flex h-8 items-center"
-                openClassName="context-menu-open"
-                items={fileMenu.items}
-            >
-                <div className="line-clamp-2">{children}</div>
+            <ContextMenu openClassName="context-menu-open" items={fileMenu.items}>
+                <div className="flex h-8 items-center" tabIndex={tabIndex}>
+                    {children}
+                </div>
             </ContextMenu>
 
             {fileMenu.modals}

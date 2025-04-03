@@ -15,8 +15,7 @@ async function appReady(): Promise<void> {
         webPreferences: {
             spellcheck: false,
             nodeIntegration: true,
-            contextIsolation: false,
-            webviewTag: true
+            contextIsolation: false
         }
     })
 

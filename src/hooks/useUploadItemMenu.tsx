@@ -1,19 +1,29 @@
 import { ItemType } from 'antd/es/menu/interface'
 import { useMemo } from 'react'
 import { Icon } from '../components/Icon'
-import { openWithBrowser } from '../helpers/openWithBrowser'
+import { formatMenuItems } from '../helpers/formatMenuItems'
+import { isLocalPathUploadItem } from '../helpers/isLocalPathUploadItem'
 import { UploadItem } from '../helpers/makeUploadItem'
+import { openWithBrowser } from '../helpers/openWithBrowser'
+import { openWithFileManager } from '../helpers/openWithFileManager'
 
 export function useUploadItemMenu(uploadItem: UploadItem) {
     const items = useMemo<ItemType[]>(() => {
-        return [
-            {
+        return formatMenuItems([
+            uploadItem.pageUrl !== undefined && {
                 key: 'open-page-url',
                 label: 'Mở URL',
                 icon: <Icon name="link" />,
-                disabled: uploadItem.pageUrl === undefined,
                 onClick: () => {
                     openWithBrowser(uploadItem.pageUrl)
+                }
+            },
+            isLocalPathUploadItem(uploadItem) && {
+                key: 'open-local-file',
+                label: 'Mở trong trình quản lý tệp',
+                icon: <Icon name="link" />,
+                onClick: () => {
+                    openWithFileManager(uploadItem.localDirPath ?? uploadItem.localFilePath)
                 }
             },
             {
@@ -29,7 +39,7 @@ export function useUploadItemMenu(uploadItem: UploadItem) {
                 label: 'Hủy tải lên',
                 icon: <Icon name="stop" />
             }
-        ]
+        ])
     }, [uploadItem])
 
     return { items }

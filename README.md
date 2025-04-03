@@ -12,15 +12,15 @@
 </p>
 
 <p align="center">
-    Lưu trữ Google Drive không giới hạn.
+    Unlimited storage uploads to Google Drive
 </p>
 
-## 📰 Giới thiệu
+## 📰 Introduction
 
-> Tạo ngày 13-03-2024.
+> Created at 13-03-2024.
 
-## 🛠️ Sử dụng
+## 🛠️ Usage
 
-## ✍️ Credit
+## ✍️ Credits
 
 <a href="https://www.flaticon.com/free-icons/archives" title="archives icons">Archives icons created by Maxim Basinski Premium - Flaticon</a>

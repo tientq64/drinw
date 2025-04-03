@@ -18,7 +18,8 @@ export interface FileProperties {
 
 export type File = DriveFile & {
     properties?: FileProperties | null
-    account: Account
+    readonly account: Account
+    updateToken: string
 }
 
 export type FileList = {
@@ -34,5 +35,6 @@ export function getGoogleDrive(account: Account): Drive {
         version: 'v3',
         auth
     })
+
     return drive
 }

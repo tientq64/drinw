@@ -36,7 +36,7 @@ export function SideBar(): ReactNode {
         {
             key: 'accounts',
             label: 'Tài khoản',
-            icon: <Icon name="switch_account" />,
+            icon: <Icon name="switch-account" />,
             onClick: () => {
                 navigate('/accounts')
             }

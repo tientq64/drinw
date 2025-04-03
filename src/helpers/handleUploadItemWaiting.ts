@@ -1,14 +1,12 @@
 import { UploadStatusEnum } from '../constants/uploadStatuses'
-import { UploadItem } from './makeUploadItem'
 import { getUploadItemUpdater } from './getUploadItemUpdater'
+import { UploadItem } from './makeUploadItem'
 import { tryStartUploadFromQueue } from './tryStartUploadFromQueue'
 
 export function handleUploadItemWaiting(uploadItem: UploadItem): void {
-    const { update } = getUploadItemUpdater(uploadItem)
+    const { setup } = getUploadItemUpdater(uploadItem.id)
 
-    update({
-        statusName: UploadStatusEnum.Waiting
-    })
+    setup(UploadStatusEnum.Waiting)
 
     tryStartUploadFromQueue()
 }

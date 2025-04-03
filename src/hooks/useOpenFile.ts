@@ -1,4 +1,5 @@
-import { folderMime } from '../constants/constants'
+import { dirWebViewLinkTemplate, fileWebViewLinkTemplate } from '../constants/constants'
+import { checkFileIsDir } from '../helpers/checkFileIsDir'
 import { File } from '../helpers/getGoogleDrive'
 import { openWithBrowser } from '../helpers/openWithBrowser'
 import { useAppStore } from '../store/useAppStore'
@@ -12,12 +13,21 @@ export function useOpenFile(): OpenFileFunction {
     const driveNavigate = useDriveNavigate()
 
     return (file, isOpenWithBrowser = false) => {
-        if (file.mimeType === folderMime && !isOpenWithBrowser) {
+        if (file.id == null) return
+
+        const isDir: boolean = checkFileIsDir(file)
+
+        if (isDir && !isOpenWithBrowser) {
             driveNavigate({
                 breadcrumbItems: [...breadcrumbItems, file]
             })
         } else {
-            openWithBrowser(file.webViewLink)
+            const webViewLinkTemplate: string = isDir
+                ? dirWebViewLinkTemplate
+                : fileWebViewLinkTemplate
+            const webViewLink: string = webViewLinkTemplate.replace('{id}', file.id)
+
+            openWithBrowser(webViewLink)
         }
     }
 }

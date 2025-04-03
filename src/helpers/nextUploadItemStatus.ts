@@ -1,35 +1,35 @@
 import { UploadStatusEnum } from '../constants/uploadStatuses'
 import { getUploadItem } from '../store/getUploadItem'
-import { UploadItem } from './makeUploadItem'
 import { handleUploadItemDownloading } from './handleUploadItemDownloading'
 import { handleUploadItemPreload } from './handleUploadItemPreload'
 import { handleUploadItemSuccess } from './handleUploadItemSuccess'
 import { handleUploadItemUploading } from './handleUploadItemUploading'
 import { handleUploadItemWaiting } from './handleUploadItemWaiting'
+import { UploadItem } from './makeUploadItem'
 
-export function nextUploadItemStatus(uploadItem: UploadItem): void {
-    const latestUploadItem: UploadItem | undefined = getUploadItem(uploadItem)
-    if (latestUploadItem === undefined) return
+export function nextUploadItemStatus(uploadItemId: string, isPending: boolean): void {
+    const uploadItem: UploadItem | undefined = getUploadItem(uploadItemId)
+    if (uploadItem === undefined) return
 
-    switch (latestUploadItem.statusName) {
+    switch (uploadItem.statusName) {
         case UploadStatusEnum.Idle:
-            handleUploadItemPreload(latestUploadItem)
+            handleUploadItemPreload(uploadItem)
             break
 
         case UploadStatusEnum.Preload:
-            handleUploadItemWaiting(latestUploadItem)
+            handleUploadItemWaiting(uploadItem)
             break
 
         case UploadStatusEnum.Waiting:
-            handleUploadItemDownloading(latestUploadItem)
+            handleUploadItemDownloading(uploadItem)
             break
 
         case UploadStatusEnum.Downloading:
-            handleUploadItemUploading(latestUploadItem)
+            handleUploadItemUploading(uploadItem)
             break
 
         case UploadStatusEnum.Uploading:
-            handleUploadItemSuccess(latestUploadItem)
+            handleUploadItemSuccess(uploadItem)
             break
     }
 }

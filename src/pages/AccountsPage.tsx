@@ -79,7 +79,14 @@ export function AccountsPage(): ReactNode {
                                 className: '!py-0',
                                 render: (value: string, account) => (
                                     <AccountCell account={account}>
-                                        {getAccountEmailName(value)}
+                                        <div className="flex items-center gap-2">
+                                            <img
+                                                className="size-4"
+                                                src="https://cdn-icons-png.flaticon.com/24/2965/2965323.png"
+                                                loading="lazy"
+                                            />
+                                            {getAccountEmailName(value)}
+                                        </div>
                                     </AccountCell>
                                 )
                             },

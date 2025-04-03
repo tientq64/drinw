@@ -1,28 +1,27 @@
-import { readdir } from 'fs-extra'
 import { addUploadItem } from '../store/addUploadItem'
 import { File } from './getGoogleDrive'
 import { makeUploadItem, UploadItem } from './makeUploadItem'
 
 interface Options {
     localDirPath: string
-    destDir: File
+    destDir?: File
+    isSubItem?: boolean
+    isReady?: boolean
 }
 
-export async function addLocalDirPathToUploadQueue({
+export function addLocalDirToQueue({
     localDirPath,
-    destDir
-}: Options): Promise<UploadItem> {
+    destDir,
+    isSubItem = false,
+    isReady = true
+}: Options): UploadItem {
     const uploadItem: UploadItem = makeUploadItem({
         localDirPath,
-        destDir
+        destDir,
+        isSubItem,
+        isReady
     })
     addUploadItem(uploadItem)
-
-    const basePaths: string[] = await readdir(localDirPath, {
-        recursive: true,
-        encoding: 'utf8'
-    })
-    console.log(basePaths)
 
     return uploadItem
 }

@@ -15,7 +15,7 @@ export function useUpdateUsage(account: Account): void {
         const storageQuota = result.data.storageQuota
         if (storageQuota == null) return
 
-        updateAccount(account, {
+        updateAccount(account.email, {
             driveSize: Number(storageQuota.usageInDrive),
             trashSize: Number(storageQuota.usageInDriveTrash)
         })

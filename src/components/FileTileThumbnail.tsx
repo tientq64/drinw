@@ -1,4 +1,5 @@
 import { ReactNode, SyntheticEvent, useState } from 'react'
+import { getFileIconUrl } from '../constants/fileIconUrls'
 import { File } from '../helpers/getGoogleDrive'
 
 interface FileTileThumbnailProps {
@@ -8,20 +9,25 @@ interface FileTileThumbnailProps {
 const errorThumbnailLinks: Record<string, boolean> = {}
 
 export function FileTileThumbnail({ file }: FileTileThumbnailProps): ReactNode {
-    const thumbnailLink = file.thumbnailLink!
+    const thumbnailLink: string | undefined = file.thumbnailLink ?? undefined
 
-    const [hasError, setHasError] = useState<boolean>(errorThumbnailLinks[thumbnailLink] ?? false)
+    const [isUseIcon, setIsUseIcon] = useState<boolean>(
+        thumbnailLink === undefined ? true : (errorThumbnailLinks[thumbnailLink] ?? false)
+    )
 
     const handleFileThumbnailLoad = (event: SyntheticEvent<HTMLImageElement>): void => {
+        if (thumbnailLink === undefined) return
+
         const image = event.currentTarget
         if (image.naturalWidth > 0) return
-        setHasError(true)
+
+        setIsUseIcon(true)
         errorThumbnailLinks[thumbnailLink] = true
     }
 
     return (
         <>
-            {!hasError && (
+            {!isUseIcon && (
                 <img
                     className="aspect-video object-cover"
                     src={thumbnailLink}
@@ -29,12 +35,10 @@ export function FileTileThumbnail({ file }: FileTileThumbnailProps): ReactNode {
                     onError={handleFileThumbnailLoad}
                 />
             )}
-            {hasError && (
-                <img
-                    className="aspect-video object-scale-down"
-                    src={file.iconLink ?? undefined}
-                    loading="lazy"
-                />
+            {isUseIcon && (
+                <div className="!flex aspect-video items-center justify-center">
+                    <img className="size-6" src={getFileIconUrl(file)} loading="lazy" />
+                </div>
             )}
         </>
     )
