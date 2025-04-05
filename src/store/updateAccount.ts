@@ -1,21 +1,16 @@
-import { find } from 'lodash-es'
+import { makeAccount } from '../helpers/makeAccount'
 import { syncCurrentAccount } from './syncCurrentAccount'
 import { Account } from './types'
 import { setState } from './useAppStore'
 
 export function updateAccount(email: string, updateData: Partial<Account>): void {
-    if (updateData.title === '') {
-        delete updateData.title
-    }
-    if (updateData.kindName === '') {
-        delete updateData.kindName
-    }
-
     setState((draft) => {
-        const draftAccount = find(draft.accounts, { email })
-        if (draftAccount === undefined) return
-
-        Object.assign(draftAccount, updateData)
+        draft.accounts = draft.accounts.map((draftAccount) => {
+            if (draftAccount.email === email) {
+                return makeAccount({ ...draftAccount, ...updateData })
+            }
+            return draftAccount
+        })
     })
 
     syncCurrentAccount(email)

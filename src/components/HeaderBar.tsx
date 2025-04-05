@@ -1,8 +1,10 @@
 import { Breadcrumb, Button, Radio, RadioChangeEvent, Space, Tooltip } from 'antd'
 import { MouseEvent, ReactNode } from 'react'
+import { rootDirId } from '../constants/constants'
 import { viewModes } from '../constants/viewModes'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
 import { File } from '../helpers/getGoogleDrive'
+import { useHeaderBarHeight } from '../hooks/useHeaderBarHeight'
 import { useCurrentDir } from '../hooks/useCurrentDir'
 import { useDriveNavigate } from '../hooks/useDriveNavigate'
 import { setViewModeName } from '../store/setViewModeName'
@@ -10,9 +12,6 @@ import { useAppStore } from '../store/useAppStore'
 import { AccountStorageBar } from './AccountStorageBar'
 import { DefaultSmartUploadSwitch } from './DefaultSmartUploadSwitch'
 import { Icon } from './Icon'
-import { rootDirId } from '../constants/constants'
-
-export const headerBarHeight: number = 33
 
 export function HeaderBar(): ReactNode {
     const currentAccount = useAppStore((state) => state.currentAccount)
@@ -22,6 +21,7 @@ export function HeaderBar(): ReactNode {
 
     const currentDir = useCurrentDir()
     const driveNavigate = useDriveNavigate()
+    const headerBarHeight = useHeaderBarHeight()
 
     const handleBreadcrumbItemClick = (
         breadcrumbItem: File,

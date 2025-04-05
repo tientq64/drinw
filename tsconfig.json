@@ -13,6 +13,7 @@
         "forceConsistentCasingInFileNames": true,
         "strictNullChecks": true,
         "allowSyntheticDefaultImports": true,
+        "noUnusedLocals": true,
         "types": ["vite/client"]
     },
     "include": ["src"],

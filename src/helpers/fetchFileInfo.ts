@@ -10,6 +10,8 @@ export type FileInfo = Partial<Omit<Payload, 'ext'>> & {
     url?: string
 }
 
+export type FileInfoKey = keyof FileInfo
+
 export function fetchFileInfo(pageUrl?: string, sourceCode?: string): Promise<FileInfo> {
     if (pageUrl !== undefined) {
         return fetchFileInfoFromPageUrl(pageUrl)

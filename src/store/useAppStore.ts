@@ -20,6 +20,7 @@ export interface AppStore {
     maxUploadQueueSize: number
     uploadChunkSize: number
     motion: boolean
+    compactMode: boolean
     isMaximized: boolean
 }
 
@@ -38,6 +39,7 @@ export const useAppStore = create<AppStore>(() => ({
     maxUploadQueueSize: 100 * MB,
     uploadChunkSize: 10 * MB,
     motion: true,
+    compactMode: false,
     isMaximized: true
 }))
 

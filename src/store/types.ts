@@ -5,7 +5,6 @@ export interface Account {
     title?: string
     kindName?: AccountKindEnum
     mainDirId?: string
-    tiktokUsernameFirstLetter?: string
     driveSize: number
     trashSize: number
     privateKey: string

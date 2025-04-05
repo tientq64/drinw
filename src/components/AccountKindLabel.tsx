@@ -5,31 +5,26 @@ import { AccountKind, AccountKindEnum, getAccountKind } from '../constants/accou
 interface AccountKindLabelProps extends HTMLAttributes<HTMLDivElement> {
     className?: string
     kind: AccountKind | AccountKindEnum | string | undefined
-    hideNone?: boolean
 }
 
-export function AccountKindLabel({
-    className,
-    kind,
-    hideNone = false,
-    ...props
-}: AccountKindLabelProps): ReactNode {
+export function AccountKindLabel({ className, kind, ...props }: AccountKindLabelProps): ReactNode {
     const accountKind = useMemo<AccountKind | undefined>(() => {
-        if (kind === undefined || typeof kind === 'string') {
-            return getAccountKind(kind)
-        }
+        if (kind === undefined) return undefined
+        if (typeof kind === 'string') return getAccountKind(kind)
         return kind
     }, [kind])
 
     return (
-        <div className={clsx('flex items-center gap-2', className)} {...props}>
-            {accountKind === undefined || !accountKind.iconUrl ? (
-                <div className="size-4" />
-            ) : (
-                <img className="h-4" src={accountKind.iconUrl} />
-            )}
+        <>
+            {accountKind === undefined && <div {...props} className={clsx('h-4', className)}></div>}
 
-            {accountKind?.name || hideNone || 'Trống'}
-        </div>
+            {accountKind !== undefined && (
+                <div {...props} className={clsx('flex items-center gap-2', className)}>
+                    <img className="h-4" src={accountKind.iconUrl} />
+
+                    {accountKind?.name}
+                </div>
+            )}
+        </>
     )
 }

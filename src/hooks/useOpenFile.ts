@@ -14,6 +14,7 @@ export function useOpenFile(): OpenFileFunction {
 
     return (file, isOpenWithBrowser = false) => {
         if (file.id == null) return
+        if (file.trashed) return
 
         const isDir: boolean = checkFileIsDir(file)
 

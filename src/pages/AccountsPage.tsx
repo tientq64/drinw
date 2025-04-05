@@ -8,7 +8,7 @@ import { AccountStorageBar } from '../components/AccountStorageBar'
 import { AccountKindEnum } from '../constants/accountKinds'
 import { getAccountEmailName } from '../helpers/getAccountEmailName'
 import { useDriveNavigate } from '../hooks/useDriveNavigate'
-import { useWindowContentSize } from '../hooks/useWindowContentSize'
+import { useTableHeaderHeight } from '../hooks/useTableHeaderHeight'
 import { setBreadcrumbItems } from '../store/setBreadcrumbItems'
 import { setCurrentAccount } from '../store/setCurrentAccount'
 import { setInTrash } from '../store/setInTrash'
@@ -21,7 +21,7 @@ export function AccountsPage(): ReactNode {
     const accounts = useAppStore((state) => state.accounts)
 
     const driveNavigate = useDriveNavigate()
-    const windowContentSize = useWindowContentSize()
+    const tableHeaderHeight: number = useTableHeaderHeight()
     const listRef = useRef<TableRef | null>(null)
 
     const handleAccountDoubleClick = (account: Account): void => {
@@ -55,6 +55,9 @@ export function AccountsPage(): ReactNode {
                         virtual
                         pagination={false}
                         size="small"
+                        scroll={{
+                            y: size.height - tableHeaderHeight
+                        }}
                         rowKey="email"
                         rowClassName="[&:has(.context-menu-open)>div]:!bg-zinc-800 h-[33px] leading-4 cursor-default"
                         onHeaderRow={() => ({
@@ -63,15 +66,14 @@ export function AccountsPage(): ReactNode {
                         onRow={(account) => ({
                             onDoubleClick: () => handleAccountDoubleClick(account)
                         })}
-                        scroll={{
-                            y: size.height - 39
-                        }}
                         onScroll={handleListScroll}
                         columns={[
                             {
                                 title: '#',
                                 width: size.width * 0.06,
-                                render: (_, __, index) => index + 1
+                                render: (_, __, index) => (
+                                    <div className="flex h-full items-center">{index + 1}</div>
+                                )
                             },
                             {
                                 title: 'Tên',
@@ -96,7 +98,9 @@ export function AccountsPage(): ReactNode {
                                 dataIndex: 'title',
                                 className: '!py-0',
                                 render: (value: string | undefined, account) => (
-                                    <AccountCell account={account}>{value}</AccountCell>
+                                    <AccountCell account={account}>
+                                        <div className="line-clamp-2">{value}</div>
+                                    </AccountCell>
                                 )
                             },
                             {
@@ -105,15 +109,20 @@ export function AccountsPage(): ReactNode {
                                 className: '!py-0',
                                 render: (value: AccountKindEnum, account) => (
                                     <AccountCell account={account}>
-                                        <AccountKindLabel kind={value} hideNone />
+                                        <AccountKindLabel kind={value} />
                                     </AccountCell>
                                 )
                             },
                             {
                                 title: 'Dung lượng',
                                 width: size.width * 0.35,
-                                render: (_, account) =>
-                                    account.mainDirId && <AccountStorageBar account={account} />
+                                render: (_, account) => (
+                                    <div className="flex h-full items-center">
+                                        {account.mainDirId && (
+                                            <AccountStorageBar account={account} />
+                                        )}
+                                    </div>
+                                )
                             }
                         ]}
                         dataSource={accounts}

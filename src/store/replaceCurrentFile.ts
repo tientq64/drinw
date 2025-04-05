@@ -1,12 +1,8 @@
 import { File } from '../helpers/getGoogleDrive'
 import { addCurrentFile } from './addCurrentFile'
-import { setState } from './useAppStore'
+import { removeCurrentFile } from './removeCurrentFile'
 
 export function replaceCurrentFile(newFile: File): void {
-    setState((draft) => {
-        draft.currentFiles = draft.currentFiles.filter((file) => {
-            return file.id !== newFile.id
-        })
-    })
+    removeCurrentFile(newFile.id)
     addCurrentFile(newFile)
 }

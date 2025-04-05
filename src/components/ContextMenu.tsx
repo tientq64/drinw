@@ -7,7 +7,7 @@ interface ContextMenuProps {
     className?: string
     openClassName?: string
     items: ItemType[]
-    children?: ReactNode
+    children?: ReactNode | ((state: { isOpen: boolean; close: VoidFunction }) => ReactNode)
 }
 
 let openingContextMenuId: string | undefined = undefined
@@ -23,6 +23,10 @@ export function ContextMenu({
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const contextMenuId: string = useId()
 
+    const close = (): void => {
+        setIsOpen(false)
+    }
+
     const handleOpenChange = (value: boolean): void => {
         if (openingContextMenuId !== undefined && openingContextMenuId !== contextMenuId) return
         setIsOpen(value)
@@ -30,7 +34,7 @@ export function ContextMenu({
     }
 
     const handleRootMouseDown = (): void => {
-        setIsOpen(false)
+        close()
         openingContextMenuId = undefined
     }
 
@@ -64,7 +68,7 @@ export function ContextMenu({
                 offset: [0, 0]
             }}
         >
-            {children}
+            {typeof children === 'function' ? children({ isOpen, close }) : children}
         </Dropdown>
     )
 }

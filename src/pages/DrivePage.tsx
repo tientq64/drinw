@@ -13,10 +13,10 @@ import { ViewModeEnum } from '../constants/viewModes'
 import { File } from '../helpers/getGoogleDrive'
 import { useCurrentDir } from '../hooks/useCurrentDir'
 import { useDriveNavigateToMainDir } from '../hooks/useDriveNavigateToMainDir'
-import { useDrivePageMenu } from '../hooks/useDrivePageMenu'
+import { useDriveOrTrashMenu } from '../hooks/useDriveOrTrashMenu'
 import { useOpenFile } from '../hooks/useOpenFile'
+import { useTableHeaderHeight } from '../hooks/useTableHeaderHeight'
 import { useUpdateUsage } from '../hooks/useUpdateUsage'
-import { useWindowContentSize } from '../hooks/useWindowContentSize'
 import { setCurrentFiles } from '../store/setCurrentFiles'
 import { useAppStore } from '../store/useAppStore'
 import { formatSize } from '../utils/formatSize'
@@ -29,16 +29,15 @@ export function DrivePage(): ReactNode {
     if (currentDir === undefined) return
 
     const inTrash = useAppStore((state) => state.inTrash)
-
+    const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
     const currentFiles = useAppStore((state) => state.currentFiles)
     const viewModeName = useAppStore((state) => state.viewModeName)
-    const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
 
     const getFilesApi = useRequest(getFiles, { manual: true })
-    const windowContentSize = useWindowContentSize()
     const openFile = useOpenFile()
-    const drivePageMenu = useDrivePageMenu(currentDir)
+    const driveMenu = useDriveOrTrashMenu(currentDir)
     const [columnCount] = useState<number>(6)
+    const tableHeaderHeight: number = useTableHeaderHeight()
 
     const firstLoading: boolean = getFilesApi.loading && getFilesApi.data === undefined
 
@@ -181,7 +180,7 @@ export function DrivePage(): ReactNode {
 
     return (
         <>
-            <ContextMenu className="h-full overflow-hidden" items={drivePageMenu.items}>
+            <ContextMenu className="h-full overflow-hidden" items={driveMenu.items}>
                 <DriveDropper>
                     <AutoSizer>
                         {(size) => (
@@ -196,6 +195,9 @@ export function DrivePage(): ReactNode {
                                         sticky
                                         virtual
                                         pagination={false}
+                                        scroll={{
+                                            y: size.height - tableHeaderHeight
+                                        }}
                                         rowKey="id"
                                         rowClassName="h-[33px] cursor-default leading-4 [&:has(.context-menu-open)>div]:!bg-zinc-800"
                                         onHeaderRow={() => ({
@@ -204,9 +206,6 @@ export function DrivePage(): ReactNode {
                                         onRow={(file) => ({
                                             onDoubleClick: () => handleFileDoubleClick(file)
                                         })}
-                                        scroll={{
-                                            y: size.height - 39
-                                        }}
                                         onScroll={(event) =>
                                             handleScrollerScroll(event.currentTarget)
                                         }
@@ -214,7 +213,11 @@ export function DrivePage(): ReactNode {
                                             {
                                                 title: '#',
                                                 width: size.width * 0.06,
-                                                render: (_, __, index) => index + 1
+                                                render: (_, __, index) => (
+                                                    <div className="flex h-full items-center">
+                                                        {index + 1}
+                                                    </div>
+                                                )
                                             },
                                             {
                                                 title: 'Tên',
@@ -250,13 +253,20 @@ export function DrivePage(): ReactNode {
                                             {
                                                 title: 'Dung lượng',
                                                 dataIndex: 'size',
-                                                render: (value) =>
-                                                    value == null ? '' : formatSize(value)
+                                                render: (value) => (
+                                                    <div className="flex h-full items-center">
+                                                        {value == null ? '' : formatSize(value)}
+                                                    </div>
+                                                )
                                             },
                                             {
                                                 title: 'Properties',
                                                 dataIndex: 'properties',
-                                                render: (value) => value?.id || value?.userId
+                                                render: (value) => (
+                                                    <div className="flex h-full items-center">
+                                                        {value?.id || value?.userId}
+                                                    </div>
+                                                )
                                             }
                                         ]}
                                         dataSource={currentFiles}
@@ -275,7 +285,7 @@ export function DrivePage(): ReactNode {
                                     <Grid
                                         className="p-2"
                                         width={size ? size.width : 1200}
-                                        height={windowContentSize.height - 32}
+                                        height={size.height}
                                         columnCount={columnCount}
                                         columnWidth={
                                             size ? (size.width - 18 - 16) / columnCount : 200
@@ -313,7 +323,7 @@ export function DrivePage(): ReactNode {
                 </DriveDropper>
             </ContextMenu>
 
-            {drivePageMenu.modals}
+            {driveMenu.modals}
         </>
     )
 }

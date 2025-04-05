@@ -16,7 +16,7 @@ export interface FileProperties {
     pageUrl?: string
 }
 
-export type File = DriveFile & {
+export type File = Omit<DriveFile, 'properties'> & {
     properties?: FileProperties | null
     readonly account: Account
     updateToken: string

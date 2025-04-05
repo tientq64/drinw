@@ -1,6 +1,9 @@
+import useApp from 'antd/es/app/useApp'
 import clsx from 'clsx'
 import { HTMLAttributes, ReactNode } from 'react'
+import { addPageUrlToUploadQueue } from '../helpers/addPageUrlToUploadQueue'
 import { addSourceCodeToQueue } from '../helpers/addSourceCodeToQueue'
+import { DroppedTextTypeEnum, guessDroppedTextType } from '../helpers/guessDroppedTextType'
 import { tryStartUploadFromQueue } from '../helpers/tryStartUploadFromQueue'
 import { useCurrentDir } from '../hooks/useCurrentDir'
 import { Dropper } from './Dropper'
@@ -12,15 +15,32 @@ export function DriveDropper({
     ...props
 }: HTMLAttributes<HTMLElement>): ReactNode {
     const currentDir = useCurrentDir()
+    const { message } = useApp()
 
     const handleDropText = (text: string): void => {
         if (currentDir === undefined) return
 
-        addSourceCodeToQueue({
-            sourceCode: text,
-            destDir: currentDir
-        })
-        tryStartUploadFromQueue()
+        const droppedType: DroppedTextTypeEnum = guessDroppedTextType(text)
+        switch (droppedType) {
+            case DroppedTextTypeEnum.Url:
+                addPageUrlToUploadQueue({
+                    pageUrl: text,
+                    destDir: currentDir
+                })
+                tryStartUploadFromQueue()
+                break
+
+            case DroppedTextTypeEnum.SourceCode:
+                addSourceCodeToQueue({
+                    sourceCode: text,
+                    destDir: currentDir
+                })
+                tryStartUploadFromQueue()
+                break
+
+            default:
+                message.error('Dữ liệu không hợp lệ')
+        }
     }
 
     return (

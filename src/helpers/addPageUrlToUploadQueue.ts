@@ -4,7 +4,7 @@ import { makeUploadItem, UploadItem } from './makeUploadItem'
 
 interface Options {
     pageUrl: string
-    isSmartUpload: boolean
+    isSmartUpload?: boolean
     destDir?: File
 }
 

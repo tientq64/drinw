@@ -10,7 +10,7 @@ import { updateAccount } from '../store/updateAccount'
 import { stopPropagation } from '../utils/stopPropagation'
 
 interface Values {
-    title?: string
+    title: string | undefined
     kindName?: AccountKindEnum
 }
 
@@ -33,8 +33,8 @@ export function useEditAccountModal(account: Account) {
     useEffect(() => {
         if (!isOpen) return
         form.setFieldsValue({
-            title: account.title ?? '',
-            kindName: account.kindName ?? AccountKindEnum.None
+            title: account.title,
+            kindName: account.kindName
         })
         setTimeout(() => {
             form.focusField('title')
@@ -53,7 +53,7 @@ export function useEditAccountModal(account: Account) {
             >
                 <Form form={form} labelCol={{ span: 4 }} onFinish={handleFormSubmit}>
                     <Form.Item label="Tên">
-                        <Input variant="filled" readOnly value={emailName} />
+                        <Input variant="filled" readOnly value={emailName} allowClear />
                     </Form.Item>
 
                     <Form.Item
@@ -71,6 +71,7 @@ export function useEditAccountModal(account: Account) {
 
                     <Form.Item name="kindName" label="Thể loại">
                         <Select
+                            allowClear
                             options={accountKinds.map<DefaultOptionType>((accountKind) => ({
                                 label: <AccountKindLabel kind={accountKind} />,
                                 value: accountKind.name

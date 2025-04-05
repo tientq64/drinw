@@ -9,7 +9,7 @@ import { useDriveNavigate } from './useDriveNavigate'
 import { useOpenFile } from './useOpenFile'
 import { useUploadFromUrlModal } from './useUploadFromUrlModal'
 
-export function useDrivePageMenu(dir: File) {
+export function useDriveMenu(dir: File) {
     const breadcrumbItems = useAppStore((state) => state.breadcrumbItems)
 
     const openFile = useOpenFile()

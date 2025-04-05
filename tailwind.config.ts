@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss/plugin'
+
 /**
  * @type {import('tailwindcss').Config}
  */
@@ -6,5 +8,9 @@ export default {
     theme: {
         extend: {}
     },
-    plugins: []
+    plugins: [
+        plugin(({ addVariant }) => {
+            addVariant('compact', 'body.dnw-compact &')
+        })
+    ]
 }

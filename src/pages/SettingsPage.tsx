@@ -4,13 +4,14 @@ import { ReactNode } from 'react'
 import { Icon } from '../components/Icon'
 import { MB } from '../constants/constants'
 import { viewModes } from '../constants/viewModes'
+import { setCompactMode } from '../store/setCompactMode'
 import { setIsDefaultSmartUpload } from '../store/setIsDefaultSmartUpload'
 import { setMasterEmail } from '../store/setMasterEmail'
 import { setMaxUploadQueueSize } from '../store/setMaxUploadQueueSize'
 import { setMotion } from '../store/setMotion'
+import { setUploadChunkSize } from '../store/setUploadChunkSize'
 import { setViewModeName } from '../store/setViewModeName'
 import { useAppStore } from '../store/useAppStore'
-import { setUploadChunkSize } from '../store/setUploadChunkSize'
 
 interface SettingValues {
     masterEmail: string
@@ -25,6 +26,7 @@ export function SettingsPage(): ReactNode {
     const maxUploadQueueSize = useAppStore((state) => state.maxUploadQueueSize)
     const uploadChunkSize = useAppStore((state) => state.uploadChunkSize)
     const motion = useAppStore((state) => state.motion)
+    const compactMode = useAppStore((state) => state.compactMode)
 
     const [form] = Form.useForm()
     const { message } = useApp()
@@ -63,7 +65,7 @@ export function SettingsPage(): ReactNode {
                     <Input className="w-64" />
                 </Form.Item>
 
-                <Form.Item label="Kiểu hiển thị">
+                <Form.Item label="Kiểu hiển thị" className="compact:mb-3 mb-5">
                     <Radio.Group
                         value={viewModeName}
                         onChange={(event) => setViewModeName(event.target.value)}
@@ -77,6 +79,15 @@ export function SettingsPage(): ReactNode {
                             </Radio>
                         ))}
                     </Radio.Group>
+                </Form.Item>
+
+                <Form.Item label="Chế độ thu gọn">
+                    <Switch
+                        checkedChildren="Bật"
+                        unCheckedChildren="Tắt"
+                        checked={compactMode}
+                        onChange={(checked) => setCompactMode(checked)}
+                    />
                 </Form.Item>
 
                 <Form.Item label="Hiệu ứng chuyển động">

@@ -1,22 +1,32 @@
 import { fileFields } from '../constants/constants'
 import { Drive, File, FileList, getGoogleDrive } from '../helpers/getGoogleDrive'
-import { makeDriveQuery } from '../helpers/makeDriveQuery'
+import { makeDriveQuery, SubQuery } from '../helpers/makeDriveQuery'
 import { makeFile } from '../helpers/makeFile'
 
 export interface GetFilesOptions {
     trashed?: boolean
+    explicitlyTrashed?: boolean | null
     pageToken?: string
 }
 
 export async function getFiles(
     dir: File,
-    { trashed = false, pageToken }: GetFilesOptions
+    { trashed = false, explicitlyTrashed = true, pageToken }: GetFilesOptions
 ): Promise<FileList> {
     const drive: Drive = getGoogleDrive(dir.account)
 
-    const q: string = makeDriveQuery(
-        trashed ? 'trashed=true' : `'${dir.id}' in parents and trashed=false`
-    )
+    let queries: SubQuery[] = []
+
+    if (trashed) {
+        queries.push('trashed=true')
+        if (typeof explicitlyTrashed === 'boolean') {
+            queries.push(`explicitlyTrashed=${explicitlyTrashed}`)
+        }
+    } else {
+        queries.push(`'${dir.id}' in parents and trashed=false`)
+    }
+
+    const q: string = makeDriveQuery(queries)
     const result = await drive.files.list({
         q,
         fields: `files(${fileFields}),nextPageToken`,

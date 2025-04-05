@@ -33,9 +33,9 @@ export function useUploadFromUrlModal(destDir: File) {
         form.setFieldValue(
             'pageUrl',
             // 'https://www.youtube.com/watch?v=cuadlyuH610'
-            'https://www.youtube.com/watch?v=0Yi6RPUkUdY'
+            // 'https://www.youtube.com/watch?v=0Yi6RPUkUdY'
             // 'https://x.com/Rainmaker1973/status/1904070678455660617'
-            // 'https://www.tiktok.com/@minmin080201/video/7484511735022456082'
+            'https://www.tiktok.com/@minmin080201/video/7484511735022456082'
         )
         form.setFieldValue('isSmartUpload', isDefaultSmartUpload)
         setTimeout(() => {

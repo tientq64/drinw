@@ -3,6 +3,7 @@ import { Dirent, readdir } from 'fs-extra'
 import { maxBy } from 'lodash-es'
 import { join } from 'path'
 import { Format } from 'youtube-dl-exec'
+import { findAccountKindByDomain } from '../constants/accountKinds'
 import { UploadStatusEnum } from '../constants/uploadStatuses'
 import { updateUploadItem } from '../store/updateUploadItem'
 import { formatPath } from '../utils/formatPath'
@@ -52,24 +53,22 @@ export async function handleUploadItemPreload(uploadItem: UploadItem): Promise<v
 
         const tempDownloadFilePath: string = `temp/${uploadItem.id}.${data.ext}`
 
-        let userUrl: string | undefined = data.uploader_url
-        if (userUrl) {
-            userUrl = userUrl.replace(/@[a-z0-9_.]+/, `@${data.uploader_id}`)
+        let kindName: string | undefined = uploadItem.kindName
+        if (kindName === undefined && data.webpage_url_domain !== undefined) {
+            kindName = findAccountKindByDomain(data.webpage_url_domain)?.domain
         }
 
-        if (data.webpage_url) {
+        const userUrl: string | undefined = data.uploader_url
+
+        if (data.webpage_url !== undefined) {
             pageUrl = data.webpage_url
-        }
-        if (pageUrl !== undefined) {
-            if (data.webpage_url_domain === 'tiktok.com') {
-                pageUrl = pageUrl.replace(/@[a-z0-9_.]+/, '@')
-            }
         }
 
         update({
             fileName,
             estimatedSize,
             tempDownloadFilePath,
+            kindName,
             fileId: data.id,
             userId: data.uploader_id,
             userName: data.uploader,

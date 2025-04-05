@@ -21,7 +21,7 @@ export async function parseSourceCodeToFileInfo(sourceCode: string): Promise<Fil
         }
     }
 
-    throw Error('URL không được hỗ trợ')
+    throw Error('URL này không được hỗ trợ')
 }
 
 function parseSpankBang(doc: Document, canonical: string, parsedUrl: ParsedUrl): FileInfo {
